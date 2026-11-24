@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Media Faktory — Custom PC Quote & Operations Suite</title>
+  <title>Media Faktory — PC Quote & Operations Suite</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -167,8 +167,8 @@
           <span id="sheetSyncBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400 border border-[#334155]">Not Linked</span>
         </div>
         <div class="flex items-center gap-1.5 mt-2">
-          <button type="button" onclick="openBackupModal()" class="flex-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-[#0f172a] hover:bg-slate-800 text-cyan-300 border border-[#334155] transition cursor-pointer">
-            Setup Sheet
+          <button type="button" onclick="pullOpenEnquiriesFromSheet(false)" class="flex-1 px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-[#0f172a] hover:bg-slate-800 text-cyan-300 border border-[#334155] transition cursor-pointer" title="Pull active/open enquiries from Google Sheet">
+            📥 Pull Sheet
           </button>
           <button type="button" id="retrySheetSyncBtn" onclick="pushAllPendingToSheet()" class="hidden px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition cursor-pointer" title="Retry pushing unsynced enquiries to Google Sheet">
             Retry (<span id="pendingSheetCount">0</span>)
@@ -268,6 +268,9 @@
                 <option value="Shaheer Ali"></option>
                 <option value="Athulya"></option>
                 <option value="Ashwin"></option>
+                <option value="Adith"></option>
+                <option value="Rinoj"></option>
+                <option value="Rijil"></option>
               </datalist>
             </div>
             <div>
@@ -902,13 +905,13 @@
           </select>
         </div>
         <div class="sm:col-span-3">
-          <label class="block text-[11px] font-medium text-slate-400 mb-1">Sort Master Sheet</label>
+          <label class="block text-[11px] font-medium text-slate-400 mb-1">Sort Within Category</label>
           <select id="masterSortSelect" onchange="renderMasterSheet()"
             class="w-full bg-[#0f172a] border border-[#334155] focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-amber-300 font-semibold outline-none">
-            <option value="updated_desc">Last Updated (Newest First)</option>
-            <option value="price_asc">Getting Price: Low to High</option>
-            <option value="price_desc">Getting Price: High to Low</option>
-            <option value="name_asc">Component Name (A–Z)</option>
+            <option value="price_asc">Category → Price: Low to High</option>
+            <option value="price_desc">Category → Price: High to Low</option>
+            <option value="name_asc">Category → Component Name (A–Z)</option>
+            <option value="updated_desc">Category → Last Updated</option>
           </select>
         </div>
       </div>
@@ -1138,6 +1141,7 @@
       "Motherboard",
       "RAM",
       "Storage (SSD)",
+      "Storage (HDD)",
       "Graphics Card",
       "CPU Cooler",
       "Power Supply",
@@ -1149,6 +1153,21 @@
       "Speakers / Audio",
       "Other"
     ];
+
+    function getCategoryRank(cat) {
+      const idx = CATEGORIES.indexOf(cat);
+      return idx === -1 ? CATEGORIES.length : idx;
+    }
+
+    function compareMasterItemsByCategory(a, b, subSort = "price_asc") {
+      const catDiff = getCategoryRank(a.category) - getCategoryRank(b.category);
+      if (catDiff !== 0) return catDiff;
+
+      if (subSort === "price_desc") return (b.gettingPrice || 0) - (a.gettingPrice || 0);
+      if (subSort === "name_asc") return (a.name || "").localeCompare(b.name || "");
+      if (subSort === "updated_desc") return (b.lastUpdated || "").localeCompare(a.lastUpdated || "");
+      return (a.gettingPrice || 0) - (b.gettingPrice || 0);
+    }
 
     const EXTERNAL_CATEGORIES = new Set([
       "Monitor",
@@ -1251,7 +1270,8 @@
     };
 
     const DEFAULT_CLOUD_SYNC_URL = "https://pc-quote-bb378-default-rtdb.firebaseio.com/mf_ops.json";
-    const DEFAULT_SHEET_SYNC_URL = "https://script.google.com/macros/s/AKfycbwLm-iGOVblr8qY83rl4nk2xsqWN5mO5m3ED3Vh_PwfjyU5ET9VtqUnTdGirsdcFzyG/exec";
+    const PREVIOUS_SHEET_SYNC_URL = "https://script.google.com/macros/s/AKfycbwLm-iGOVblr8qY83rl4nk2xsqWN5mO5m3ED3Vh_PwfjyU5ET9VtqUnTdGirsdcFzyG/exec";
+    const DEFAULT_SHEET_SYNC_URL = "https://script.google.com/macros/s/AKfycbx3XswfD9OK2DoOkrFE1XTB0yqYFiYZUj8P4gr9FCXiOZp0A5i4-7tXGULukSlLZTLp/exec";
     const DEFAULT_SHEET_SECRET = "MF_SECRET_2026";
 
     let state = {
@@ -1428,7 +1448,12 @@
         const savedCloudUrl = localStorage.getItem(DB_KEYS.CLOUD_URL);
         state.cloudSyncUrl = savedCloudUrl === null ? DEFAULT_CLOUD_SYNC_URL : savedCloudUrl;
         const savedSheetUrl = localStorage.getItem(DB_KEYS.SHEET_URL);
-        state.sheetSyncUrl = (savedSheetUrl === null || savedSheetUrl === "") ? DEFAULT_SHEET_SYNC_URL : savedSheetUrl;
+        if (!savedSheetUrl || savedSheetUrl === PREVIOUS_SHEET_SYNC_URL) {
+          state.sheetSyncUrl = DEFAULT_SHEET_SYNC_URL;
+          localStorage.setItem(DB_KEYS.SHEET_URL, DEFAULT_SHEET_SYNC_URL);
+        } else {
+          state.sheetSyncUrl = savedSheetUrl;
+        }
         state.sheetSyncSecret = localStorage.getItem(DB_KEYS.SHEET_SECRET) || DEFAULT_SHEET_SECRET;
       } catch {
         state.enquiries = [];
@@ -1710,7 +1735,13 @@
 
       if (state.cloudSyncUrl) {
         startLiveCloudPolling();
-        pullAndMergeFromCloud(true);
+        pullAndMergeFromCloud(true).then(() => {
+          if (state.sheetSyncUrl) {
+            pullOpenEnquiriesFromSheet(true);
+          }
+        });
+      } else if (state.sheetSyncUrl) {
+        pullOpenEnquiriesFromSheet(true);
       }
     }
 
@@ -1962,7 +1993,8 @@
         { cat: "Processor", regex: /^(PROCESSOR|CPU)\b[:\-\s]*/i },
         { cat: "Motherboard", regex: /^(MOTHERBOARD|MOBO|MB)\b[:\-\s]*/i },
         { cat: "RAM", regex: /^(RAM|MEMORY)\b[:\-\s]*/i },
-        { cat: "Storage (SSD)", regex: /^(STORAGE\s*\(SSD\)|SSD|NVME|HDD|HARD\s*DISK)\b[:\-\s]*/i },
+        { cat: "Storage (HDD)", regex: /^(STORAGE\s*\(HDD\)|HDD|HARD\s*DISK|HARD\s*DRIVE)\b[:\-\s]*/i },
+        { cat: "Storage (SSD)", regex: /^(STORAGE\s*\(SSD\)|SSD|NVME)\b[:\-\s]*/i },
         { cat: "Graphics Card", regex: /^(GRAPHICS\s*CARD|GPU|VGA|GRAPHIC\s*CARD)\b[:\-\s]*/i },
         { cat: "CPU Cooler", regex: /^(CPU\s*LIQUID\s*COOLER|LIQUID\s*COOLER|AIO|CPU\s*AIR\s*COOLER|CPU\s*COOLER|CPU\s*FAN|COOLER)\b[:\-\s]*/i },
         { cat: "Power Supply", regex: /^(POWER\s*SUPPLY|SMPS|PSU)\b[:\-\s]*/i },
@@ -1986,7 +2018,8 @@
         if (/\b(RYZEN|CORE\s*I[3579]|CORE\s*ULTRA|INTEL\s*I[3579])\b/i.test(upper)) category = "Processor";
         else if (/\b(B650|B850|B860|B760|B550|A520|H610|H310|Z790|Z890|X870)\b/i.test(upper)) category = "Motherboard";
         else if (/\b(DDR4|DDR5|MHZ|VENGEANCE|RIPJAWS|AEGIS|LANCER)\b/i.test(upper)) category = "RAM";
-        else if (/\b(NVME|SN5100|SN7100|SN350|GAMMIX|M\.2)\b/i.test(upper)) category = "Storage (SSD)";
+        else if (/\b(HDD|HARD\s*DISK|BARRACUDA|IRONWOLF|SKYHAWK|WD\s*BLUE\s*\d+TB|7200\s*RPM|5400\s*RPM)\b/i.test(upper)) category = "Storage (HDD)";
+        else if (/\b(NVME|SSD|SN5100|SN7100|SN350|GAMMIX|M\.2)\b/i.test(upper)) category = "Storage (SSD)";
         else if (/\b(RTX|GTX|RX\s*\d{4}|GT\s*730|RADEON|GEFORCE)\b/i.test(upper)) category = "Graphics Card";
         else if (/\b(LE240|LE360|LS520|LS720|AK400|AG400|AK620)\b/i.test(upper)) category = "CPU Cooler";
         else if (/\b(PL550|PL650|PN750|PN850|A650BN|80\+|80\s*PLUS|BRONZE|GOLD)\b/i.test(upper)) category = "Power Supply";
@@ -2742,12 +2775,7 @@
         return true;
       });
 
-      items.sort((a, b) => {
-        if (sortBy === "price_asc") return a.gettingPrice - b.gettingPrice;
-        if (sortBy === "price_desc") return b.gettingPrice - a.gettingPrice;
-        if (sortBy === "name_asc") return a.name.localeCompare(b.name);
-        return (b.lastUpdated || "").localeCompare(a.lastUpdated || "");
-      });
+      items.sort((a, b) => compareMasterItemsByCategory(a, b, sortBy));
 
       const tbody = document.getElementById("masterTableBody");
       if (items.length === 0) {
@@ -2827,11 +2855,13 @@
       const cat = document.getElementById("pickerCatFilter").value;
       const listEl = document.getElementById("masterPickerList");
 
-      const matches = state.masterItems.filter(item => {
-        if (cat !== "ALL" && item.category !== cat) return false;
-        if (q && !item.name.toLowerCase().includes(q) && !item.category.toLowerCase().includes(q)) return false;
-        return true;
-      });
+      const matches = state.masterItems
+        .filter(item => {
+          if (cat !== "ALL" && item.category !== cat) return false;
+          if (q && !item.name.toLowerCase().includes(q) && !item.category.toLowerCase().includes(q)) return false;
+          return true;
+        })
+        .sort((a, b) => compareMasterItemsByCategory(a, b, "price_asc"));
 
       if (matches.length === 0) {
         listEl.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">No matching components in Master Price Sheet.</div>`;
@@ -3008,7 +3038,8 @@
         "Previous Price", "Price Delta", "Last Updated"
       ];
 
-      const rows = state.masterItems.map(m => [
+      const sortedMaster = state.masterItems.slice().sort((a, b) => compareMasterItemsByCategory(a, b, "price_asc"));
+      const rows = sortedMaster.map(m => [
         m.category,
         m.name,
         m.isExternal ? "External Peripheral" : "Core PC",
@@ -3400,7 +3431,7 @@
       let activeCount = 0;
       let quotedCount = 0;
 
-      const ownerSet = new Set();
+      const ownerSet = new Set(["Shaheer Ali", "Athulya", "Ashwin", "Adith", "Rinoj", "Rijil"]);
       state.enquiries.forEach(e => {
         if (e.owner) ownerSet.add(e.owner);
         const isClosed = e.status === "Closed" || e.status === "Won / Billed";
@@ -3661,6 +3692,7 @@
         const data = await res.json();
         if (data && data.ok) {
           showToast("Connected to Enquiry Register - Sales Google Sheet!", "emerald");
+          await pullOpenEnquiriesFromSheet(true);
           pushAllPendingToSheet();
         } else {
           showToast(data?.error || "Connection failed. Check Secret Token.", "amber");
@@ -3670,9 +3702,9 @@
       }
     }
 
-    async function pullOpenEnquiriesFromSheet() {
+    async function pullOpenEnquiriesFromSheet(silent = false) {
       if (!state.sheetSyncUrl) {
-        showToast("Paste and save your Apps Script Web App URL first.", "amber");
+        if (!silent) showToast("Paste and save your Apps Script Web App URL first.", "amber");
         return;
       }
       try {
@@ -3680,27 +3712,55 @@
         const res = await fetch(getUrl);
         const data = await res.json();
         if (!data || !data.ok || !Array.isArray(data.enquiries)) {
-          showToast(data?.error || "Failed to pull open leads from Sheet.", "amber");
+          if (!silent) showToast(data?.error || "Failed to pull open leads from Sheet.", "amber");
           return;
         }
+        const delSet = new Set((state.deletedIds || []).map(String));
         let added = 0;
+        let updated = 0;
         data.enquiries.forEach(row => {
-          const exists = state.enquiries.some(e => e.id === row.id);
-          if (!exists) {
+          if (!row || !row.id || delSet.has(String(row.id))) return;
+          const pKey = normalizePhoneKey(row.phone);
+          const existing = state.enquiries.find(e =>
+            e.id === row.id ||
+            (pKey && pKey.length >= 10 && normalizePhoneKey(e.phone) === pKey && e.dateIso === row.dateIso)
+          );
+          if (!existing) {
             state.enquiries.push({
               ...row,
-              phoneKey: normalizePhoneKey(row.phone),
+              phoneKey: pKey,
               updatedAt: Date.now(),
               sheetSynced: true
             });
             added++;
+          } else if (existing.sheetSynced) {
+            // Update local entry if it hasn't been modified offline locally
+            existing.customer = row.customer || existing.customer;
+            existing.phone = row.phone || existing.phone;
+            existing.phoneKey = pKey || existing.phoneKey;
+            existing.requirement = row.requirement || existing.requirement;
+            existing.budget = row.budget || existing.budget;
+            existing.status = row.status || existing.status;
+            existing.nextFollowUp = row.nextFollowUp || existing.nextFollowUp;
+            existing.notes = row.notes || existing.notes;
+            existing.owner = row.owner || existing.owner;
+            existing.city = row.city || existing.city;
+            existing.leadSource = row.leadSource || existing.leadSource;
+            existing.leadTemp = row.leadTemp || existing.leadTemp;
+            updated++;
           }
         });
-        persistDatabaseToStorage();
-        refreshAllViews();
-        showToast(`Pulled ${added} open lead(s) from Google Sheet!`, "emerald");
+        if (added > 0 || updated > 0) {
+          persistDatabaseToStorage();
+          refreshAllViews();
+        }
+        if (!silent) {
+          showToast(added > 0 ? `Pulled ${added} open lead(s) from Google Sheet!` : "All open leads from Google Sheet are already up to date!", "emerald");
+        } else if (added > 0) {
+          showToast(`📥 Loaded ${added} active lead(s) from Google Sheet!`, "emerald");
+        }
       } catch {
-        showToast("Error pulling leads from Google Sheet.", "amber");
+        if (!silent) showToast("Error pulling leads from Google Sheet.", "amber");
       }
     }
 
