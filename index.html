@@ -630,7 +630,7 @@
 
         <div id="parserDrawerBody" class="px-4 sm:px-5 pb-4 pt-2 border-t border-[#334155]">
           <p class="text-xs text-slate-300 mb-2">
-            Paste raw distributor lines in <strong>any order</strong> — automatically formats names to <strong>ALL CAPS</strong>, catches spelling/word-order duplicates against your Master Sheet, and sorts into standard build order.
+            Paste raw distributor lines in <strong>any order</strong> — automatically formats names to <strong>ALL CAPS</strong>, catches spelling/word-order duplicates against your Master Sheet (while preserving capacity/model differences), and sorts into standard build order.
           </p>
           <textarea id="rawPasteInput" rows="4" placeholder="CABINET DEEPCOOL CG530 4F 4300+&#10;PowerColor Reaper RX9060XT 8GB GDDR6 53940/-&#10;PROCESSOR AMD RYZEN 5 7600X 15000+&#10;MOTHERBOARD MSI B650M GAMING WIFI DDR5 9200+&#10;2x RAM 16GB ADATA XPG LANCER BLADE DDR5 5600MHZ 22500+"
             class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl p-3 text-xs font-mono text-slate-100 placeholder-slate-500 outline-none transition mb-3"></textarea>
@@ -658,7 +658,7 @@
               <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
               3. System Components & Inline Master Search
             </h2>
-            <p class="text-[11px] text-slate-400 mt-0.5">Type in any component box to search your <strong class="text-cyan-300">Master Price Sheet</strong> (with typo matching), or click <strong class="text-emerald-300">+</strong> on any row to insert below.</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Type in any component box to search your <strong class="text-cyan-300">Master Price Sheet</strong>, or click <strong class="text-emerald-300">+</strong> on any row to insert below.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <button type="button" onclick="sortCurrentComponentsStandardOrder()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/35 transition cursor-pointer" title="Sort all components into standard build order">
@@ -931,15 +931,15 @@
           <div class="flex items-center gap-2">
             <h2 class="text-base sm:text-lg font-bold text-white">Master Component Price Sheet (Distributor Getting Prices)</h2>
             <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
-              FUZZY DEDUPLICATED &amp; ALL-CAPS
+              CAPACITY-SAFE DEDUPLICATED &amp; ALL-CAPS
             </span>
           </div>
-          <p class="text-xs text-slate-400 mt-0.5">Every generated quote automatically upserts component getting prices here using token fingerprinting &amp; spelling similarity matching so minor typos never create duplicate entries.</p>
+          <p class="text-xs text-slate-400 mt-0.5">Every generated quote automatically upserts component getting prices here while strictly preserving different storage capacities (`1TB` vs `2TB`), RAM sizes, wattages, and model numbers.</p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
           <button type="button" onclick="openDeduplicateModal()"
-            class="admin-only-control inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-600/25 hover:bg-purple-600/40 text-purple-200 border border-purple-500/45 transition cursor-pointer" title="Safely merge spelling/word-order duplicates and standardize all names to ALL-CAPS">
+            class="admin-only-control inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-600/25 hover:bg-purple-600/40 text-purple-200 border border-purple-500/45 transition cursor-pointer" title="Safely merge exact/typo duplicates without merging different storage sizes or models">
             <span>🧹 Deduplicate &amp; ALL-CAPS</span>
           </button>
           <button type="button" onclick="syncMasterAndPrebuiltsToGoogleSheet(false)"
@@ -1324,7 +1324,7 @@
       <div class="px-5 py-4 border-b border-[#334155] flex items-center justify-between">
         <div>
           <h3 class="text-base font-bold text-white">🧹 Safe Master Sheet Deduplication &amp; ALL-CAPS Standardizer</h3>
-          <p class="text-xs text-slate-400">Merges duplicate items caused by spelling/word-order typos while keeping latest getting prices &amp; protecting all Saved Quotes and Pre-Built Sets</p>
+          <p class="text-xs text-slate-400">Merges true spelling/word-order duplicates while keeping different capacities (`1TB` vs `2TB`), wattages &amp; models separate</p>
         </div>
         <button type="button" onclick="closeModal('deduplicateModal')" class="p-1.5 rounded-lg text-slate-400 hover:text-white cursor-pointer">✕</button>
       </div>
@@ -1835,7 +1835,7 @@
     };
 
     // =========================================================================
-    // 3. ALL-CAPS STANDARDIZER & FUZZY DEDUPLICATION ENGINE
+    // 3. ALL-CAPS STANDARDIZER & CAPACITY/MODEL-SAFE FUZZY DEDUPLICATION
     // =========================================================================
     const STOP_TOKENS = new Set([
       "PROCESSOR", "CPU", "MOTHERBOARD", "MOBO", "RAM", "MEMORY", "SSD", "HDD",
@@ -1846,23 +1846,102 @@
       "CORES", "THREADS", "PLUS", "TEMPERED", "GLASS", "PANORAMIC", "M2"
     ]);
 
-    function buildTokenFingerprint(rawName) {
-      let s = String(rawName || "")
+    function normalizeHardwareUnits(rawName) {
+      return String(rawName || "")
         .toUpperCase()
         .replace(/\|.*$/, "")
         .replace(/\b1000\s*GB\b/g, "1TB")
         .replace(/\b2000\s*GB\b/g, "2TB")
         .replace(/\b4000\s*GB\b/g, "4TB")
-        .replace(/\b(\d+)\s*(GB|TB|MHZ|W|HZ|MM)\b/g, "$1$2")
+        .replace(/\b8000\s*GB\b/g, "8TB")
+        .replace(/\b(\d+)\s*(GB|TB|MHZ|W|HZ|MM|VA)\b/g, "$1$2")
         .replace(/\bDDR\s*([45])\b/g, "DDR$1")
         .replace(/\bRX\s*(\d{4})\s*(XT|GRE|XTX)?\b/g, "RX$1$2")
         .replace(/\bRTX\s*(\d{4})\s*(TI|SUPER)?\b/g, "RTX$1$2")
+        .replace(/\bGTX\s*(\d{4})\s*(TI|SUPER)?\b/g, "GTX$1$2");
+    }
+
+    function buildTokenFingerprint(rawName) {
+      const s = normalizeHardwareUnits(rawName)
         .replace(/[^A-Z0-9]+/g, " ")
         .trim();
 
       const tokens = s.split(/\s+/).filter(t => t && !STOP_TOKENS.has(t));
       const uniqueSorted = Array.from(new Set(tokens)).sort();
       return uniqueSorted.join("|");
+    }
+
+    /**
+     * Extracts critical hardware specs & numeric model identifiers that MUST match
+     * before two items can ever be considered duplicates:
+     * - Storage / VRAM / RAM capacity (e.g., 8GB vs 16GB, 500GB vs 1TB vs 2TB)
+     * - Wattage / VA (e.g., 550W vs 650W vs 750W)
+     * - Frequency / Refresh rate (e.g., 5600MHZ vs 6000MHZ, 100HZ vs 180HZ)
+     * - Memory gen (DDR4 vs DDR5) & Tier (BRONZE vs GOLD, WIFI vs NON-WIFI)
+     * - Numeric model identifiers (e.g., 7600 vs 7600X, SN5100 vs SN7100, 5060 vs 5060TI)
+     */
+    function extractCriticalSpecSignature(rawName) {
+      const s = normalizeHardwareUnits(rawName).replace(/[^A-Z0-9]+/g, " ").trim();
+      const tokens = s.split(/\s+/).filter(Boolean);
+
+      const capacities = [];
+      const wattages = [];
+      const frequencies = [];
+      const ddrGens = [];
+      const modelCodes = [];
+
+      tokens.forEach(tok => {
+        if (/^\d+(GB|TB)$/.test(tok)) {
+          capacities.push(tok);
+        } else if (/^\d+(W|VA)$/.test(tok)) {
+          wattages.push(tok);
+        } else if (/^\d+(MHZ|HZ|MM)$/.test(tok)) {
+          frequencies.push(tok);
+        } else if (/^DDR[345]$/.test(tok)) {
+          ddrGens.push(tok);
+        } else if (/\d/.test(tok) && !STOP_TOKENS.has(tok) && tok !== "80") {
+          // Any alphanumeric model code containing digits (e.g. 7600X, B650M, SN7100, RX9060XT, 4F)
+          modelCodes.push(tok);
+        }
+      });
+
+      const hasWifi = tokens.includes("WIFI") ? "WIFI" : "";
+      const psuTier = tokens.find(t => ["BRONZE", "GOLD", "PLATINUM", "SILVER"].includes(t)) || "";
+
+      return {
+        capacities: Array.from(new Set(capacities)).sort().join(","),
+        wattages: Array.from(new Set(wattages)).sort().join(","),
+        frequencies: Array.from(new Set(frequencies)).sort().join(","),
+        ddrGens: Array.from(new Set(ddrGens)).sort().join(","),
+        modelCodes: Array.from(new Set(modelCodes)).sort().join(","),
+        hasWifi,
+        psuTier
+      };
+    }
+
+    function haveCompatibleCriticalSpecs(nameA, nameB) {
+      const sigA = extractCriticalSpecSignature(nameA);
+      const sigB = extractCriticalSpecSignature(nameB);
+
+      // Different storage/RAM/VRAM capacity (e.g., 1TB vs 2TB, 8GB vs 16GB) -> NEVER duplicate
+      if (sigA.capacities !== sigB.capacities) return false;
+
+      // Different PSU wattage / UPS VA (e.g., 650W vs 750W) -> NEVER duplicate
+      if (sigA.wattages !== sigB.wattages) return false;
+
+      // Different RAM speed / Monitor refresh rate / Radiator size -> NEVER duplicate
+      if (sigA.frequencies !== sigB.frequencies) return false;
+
+      // Different DDR generation (DDR4 vs DDR5) -> NEVER duplicate
+      if (sigA.ddrGens !== sigB.ddrGens) return false;
+
+      // Different PSU efficiency tier (Bronze vs Gold) -> NEVER duplicate
+      if (sigA.psuTier && sigB.psuTier && sigA.psuTier !== sigB.psuTier) return false;
+
+      // Different model codes (e.g., 7600 vs 7600X, SN5100 vs SN7100, B650M vs B850M) -> NEVER duplicate
+      if (sigA.modelCodes !== sigB.modelCodes) return false;
+
+      return true;
     }
 
     function computeLevenshteinDistance(a, b) {
@@ -1914,21 +1993,23 @@
       const fp = buildTokenFingerprint(rawName);
       if (!fp) return null;
 
-      // 1. Exact order-independent token fingerprint match
+      // 1. Exact order-independent token fingerprint match (with compatible specs)
       const exactFpMatch = (state.masterItems || []).find(m => {
+        if (category && category !== "Other" && m.category !== category) return false;
         const mFp = buildTokenFingerprint(m.name);
-        return mFp === fp && (!category || category === "Other" || m.category === category);
+        return mFp === fp && haveCompatibleCriticalSpecs(rawName, m.name);
       });
       if (exactFpMatch) return { item: exactFpMatch, score: 1.0 };
 
-      // 2. Fuzzy spelling typo match (>= 0.86 similarity within same category)
+      // 2. Fuzzy spelling typo match (>= 0.85 similarity) ONLY when capacities, wattages & model codes match
       let bestMatch = null;
       let bestScore = 0;
       (state.masterItems || []).forEach(m => {
         if (category && category !== "Other" && m.category !== category) return;
+        if (!haveCompatibleCriticalSpecs(rawName, m.name)) return;
         const mFp = buildTokenFingerprint(m.name);
         const score = computeFingerprintSimilarity(fp, mFp);
-        if (score >= 0.86 && score > bestScore) {
+        if (score >= 0.85 && score > bestScore) {
           bestScore = score;
           bestMatch = m;
         }
@@ -2092,9 +2173,12 @@
           if (visited.has(items[j].id)) continue;
           const cand = items[j];
           if (base.category !== cand.category) continue;
+          // Never group items that differ in capacity (1TB vs 2TB, 8GB vs 16GB), wattage, frequency, or model number!
+          if (!haveCompatibleCriticalSpecs(base.name, cand.name)) continue;
+
           const candFp = buildTokenFingerprint(cand.name);
           const sim = computeFingerprintSimilarity(baseFp, candFp);
-          if (sim >= 0.86) {
+          if (sim >= 0.85) {
             group.push(cand);
             visited.add(cand.id);
           }
@@ -2120,10 +2204,10 @@
 
       let clustersHtml = "";
       if (clusters.length === 0) {
-        clustersHtml = `<div class="text-emerald-300 font-semibold">✅ Zero duplicate components detected in Master Price Sheet!</div>`;
+        clustersHtml = `<div class="text-emerald-300 font-semibold">✅ Zero duplicate components detected in Master Price Sheet! (Different capacities &amp; models are safely preserved.)</div>`;
       } else {
         clustersHtml = `
-          <div class="text-amber-300 font-bold mb-2">Found ${clusters.length} duplicate group(s) to merge safely:</div>
+          <div class="text-amber-300 font-bold mb-2">Found ${clusters.length} true duplicate group(s) to merge safely:</div>
           <div class="max-h-44 overflow-y-auto space-y-2 pr-1">
             ${clusters.map(grp => {
               const winner = grp[0];
@@ -2144,6 +2228,7 @@
         ${clustersHtml}
         <div class="pt-2 mt-2 border-t border-[#334155] text-[11px] text-slate-300">
           • <strong>${nonCapsCount}</strong> Master Sheet item(s) will be formatted to strict <strong>ALL-CAPS</strong>.<br/>
+          • Different storage sizes (e.g., <code>1TB</code> vs <code>2TB</code>), RAM sizes, wattages &amp; models are <strong>never</strong> merged.<br/>
           • All <strong>Saved Quotes</strong> and <strong>Pre-Built PC Sets</strong> keep their exact historical prices and totals.
         </div>
       `;
@@ -2151,7 +2236,7 @@
       openModal("deduplicateModal");
     }
 
-    function executeMasterDeduplication() {
+    async function executeMasterDeduplication() {
       if (!isAdminUser()) return;
 
       const updateHistoricalNames = document.getElementById("dedupeUpdateHistoricalNames").checked;
@@ -2160,27 +2245,49 @@
 
       clusters.forEach(grp => {
         const winner = grp[0];
-        winner.name = standardizeAllCapsComponentName(winner.name, winner.category, true);
-        winner.normKey = buildTokenFingerprint(winner.name);
+        const cleanWinnerName = standardizeAllCapsComponentName(winner.name, winner.category, true);
+        const winnerFp = buildTokenFingerprint(cleanWinnerName);
+        winner.name = cleanWinnerName;
+        winner.normKey = winnerFp;
         winner.updatedAt = Date.now();
 
         grp.slice(1).forEach(dup => {
           idsToRemove.add(dup.id);
           recordDeletedId(dup.id);
-          recordDeletedId(dup.normKey);
+          if (dup.normKey && dup.normKey !== winnerFp) {
+            recordDeletedId(dup.normKey);
+          }
         });
       });
 
-      state.masterItems = state.masterItems
+      // Second pass: collapse any remaining identical (category + normKey) pairs so zero duplicates remain
+      const dedupedMap = new Map();
+      state.masterItems
         .filter(m => !idsToRemove.has(m.id))
-        .map(m => {
+        .forEach(m => {
           const cleanName = standardizeAllCapsComponentName(m.name, m.category, true);
-          return {
+          const fp = buildTokenFingerprint(cleanName);
+          const compositeKey = `${m.category}::${fp}`;
+          const normalizedItem = {
             ...m,
             name: cleanName,
-            normKey: buildTokenFingerprint(cleanName)
+            normKey: fp
           };
+          const existing = dedupedMap.get(compositeKey);
+          if (!existing) {
+            dedupedMap.set(compositeKey, normalizedItem);
+          } else {
+            // Keep whichever has newer timestamp; record removed id
+            if (Number(normalizedItem.updatedAt || 0) >= Number(existing.updatedAt || 0)) {
+              recordDeletedId(existing.id);
+              dedupedMap.set(compositeKey, normalizedItem);
+            } else {
+              recordDeletedId(normalizedItem.id);
+            }
+          }
         });
+
+      state.masterItems = Array.from(dedupedMap.values());
 
       // Optionally standardize display names in Saved Quotes & Pre-Built PC Sets (prices untouched!)
       if (updateHistoricalNames) {
@@ -2196,11 +2303,16 @@
         });
       }
 
-      persistDatabaseToStorage();
+      saveLocalOnly();
       refreshAllViews();
       closeModal("deduplicateModal");
-      syncMasterAndPrebuiltsToGoogleSheet(true);
-      showToast(`✨ Merged ${idsToRemove.size} duplicate(s) & standardized all items to ALL-CAPS!`, "emerald");
+
+      // Directly overwrite cloud snapshot so old duplicates do not re-merge back from Firebase
+      if (state.cloudSyncUrl) {
+        await pushDirectSnapshotToCloud();
+      }
+      await syncMasterAndPrebuiltsToGoogleSheet(true);
+      showToast(`✨ Cleaned Master Sheet (${state.masterItems.length} unique items) & applied ALL-CAPS!`, "emerald");
     }
 
     // =========================================================================
@@ -2430,7 +2542,7 @@
     }
 
     // =========================================================================
-    // 7. LOCAL STORAGE & REAL-TIME MULTI-PC CLOUD SYNC ENGINE
+    // 7. LOCAL STORAGE & REAL-TIME MULTI-PC MERGE ENGINE
     // =========================================================================
     function loadDatabaseFromStorage() {
       try {
@@ -2514,6 +2626,30 @@
       return Array.from(map.values()).sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0));
     }
 
+    function mergeMasterCollections(localArr, remoteArr, deletedSet) {
+      const map = new Map();
+      const upsert = (item) => {
+        if (!item || !item.name) return;
+        if (item.id && deletedSet.has(String(item.id))) return;
+        const fp = buildTokenFingerprint(item.name);
+        if (!fp || deletedSet.has(fp)) return;
+        const compositeKey = `${item.category || "Other"}::${fp}`;
+        const existing = map.get(compositeKey);
+        if (!existing) {
+          map.set(compositeKey, { ...item, normKey: fp });
+        } else {
+          const existingTs = Number(existing.updatedAt || 0);
+          const incomingTs = Number(item.updatedAt || 0);
+          if (incomingTs >= existingTs) {
+            map.set(compositeKey, { ...item, normKey: fp });
+          }
+        }
+      };
+      (remoteArr || []).forEach(upsert);
+      (localArr || []).forEach(upsert);
+      return Array.from(map.values()).sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0));
+    }
+
     function updateSyncUiIndicators(status) {
       const dot = document.getElementById("syncStatusDot");
       const syncNowBtn = document.getElementById("syncNowBtn");
@@ -2569,7 +2705,7 @@
           state.buildOrders = mergeCollectionByKey(state.buildOrders, remote.buildOrders, delSet, "id");
           state.savedQuotes = mergeCollectionByKey(state.savedQuotes, remote.savedQuotes, delSet, "id");
           state.prebuiltSets = mergeCollectionByKey(state.prebuiltSets, remote.prebuiltSets, delSet, "id");
-          state.masterItems = mergeCollectionByKey(state.masterItems, remote.masterItems, delSet, "normKey");
+          state.masterItems = mergeMasterCollections(state.masterItems, remote.masterItems, delSet);
 
           saveLocalOnly();
           refreshAllViews();
@@ -2585,6 +2721,36 @@
       } catch {
         updateSyncUiIndicators("error");
         if (!silent) showToast("Could not reach Cloud Sync URL.", "amber");
+      } finally {
+        state.isSyncing = false;
+      }
+    }
+
+    async function pushDirectSnapshotToCloud() {
+      if (!state.cloudSyncUrl) return;
+      state.isSyncing = true;
+      updateSyncUiIndicators("syncing");
+      try {
+        const payload = {
+          updatedAt: Date.now(),
+          enquiries: state.enquiries,
+          serviceTickets: state.serviceTickets,
+          buildOrders: state.buildOrders,
+          savedQuotes: state.savedQuotes,
+          prebuiltSets: state.prebuiltSets,
+          masterItems: state.masterItems,
+          deletedIds: state.deletedIds
+        };
+
+        const putRes = await fetch(state.cloudSyncUrl, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!putRes.ok) throw new Error("Cloud PUT failed");
+        updateSyncUiIndicators("synced");
+      } catch {
+        updateSyncUiIndicators("error");
       } finally {
         state.isSyncing = false;
       }
@@ -2606,7 +2772,7 @@
             state.buildOrders = mergeCollectionByKey(state.buildOrders, remote.buildOrders, delSet, "id");
             state.savedQuotes = mergeCollectionByKey(state.savedQuotes, remote.savedQuotes, delSet, "id");
             state.prebuiltSets = mergeCollectionByKey(state.prebuiltSets, remote.prebuiltSets, delSet, "id");
-            state.masterItems = mergeCollectionByKey(state.masterItems, remote.masterItems, delSet, "normKey");
+            state.masterItems = mergeMasterCollections(state.masterItems, remote.masterItems, delSet);
             saveLocalOnly();
           }
         }
@@ -4250,10 +4416,11 @@
           const directHit = !q
             ? (rowCat === "Other" || item.category === rowCat)
             : (item.name.toLowerCase().includes(q) || item.category.toLowerCase().includes(q));
-          const simScore = qFp ? computeFingerprintSimilarity(qFp, buildTokenFingerprint(item.name)) : 0;
+          const specsMatch = q ? haveCompatibleCriticalSpecs(q, item.name) : true;
+          const simScore = (qFp && specsMatch) ? computeFingerprintSimilarity(qFp, buildTokenFingerprint(item.name)) : 0;
           return { item, directHit, simScore };
         })
-        .filter(x => x.directHit || x.simScore >= 0.72)
+        .filter(x => x.directHit || x.simScore >= 0.78)
         .sort((a, b) => {
           const aSameCat = a.item.category === rowCat ? 0 : 1;
           const bSameCat = b.item.category === rowCat ? 0 : 1;
@@ -4280,7 +4447,7 @@
               <div class="min-w-0">
                 <div class="text-xs font-semibold text-white truncate">
                   ${escapeHtml(m.name)}
-                  ${!directHit && simScore >= 0.72 ? `<span class="ml-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300">Did you mean?</span>` : ""}
+                  ${!directHit && simScore >= 0.78 ? `<span class="ml-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300">Did you mean?</span>` : ""}
                 </div>
                 <div class="text-[10px] text-slate-400">${escapeHtml(m.category)} • ${escapeHtml(m.warranty)}</div>
               </div>
@@ -4514,7 +4681,7 @@
     }
 
     // =========================================================================
-    // 13. MASTER SHEET UPSERT (WITH FUZZY DEDUP) & SMART REVISION SAVE
+    // 13. MASTER SHEET UPSERT (WITH CAPACITY-SAFE FUZZY DEDUP) & REVISION SAVE
     // =========================================================================
     function upsertMasterComponent(comp, sourceLabel = "Quote") {
       const standardizedName = standardizeAllCapsComponentName(comp.name, comp.category, false);
@@ -4528,7 +4695,9 @@
       state.deletedIds = state.deletedIds.filter(d => d !== normKey);
 
       const fuzzyHit = findMasterFuzzyMatch(standardizedName, comp.category);
-      const existing = fuzzyHit ? fuzzyHit.item : state.masterItems.find(m => m.normKey === normKey);
+      const existing = fuzzyHit
+        ? fuzzyHit.item
+        : state.masterItems.find(m => m.category === comp.category && m.normKey === normKey && haveCompatibleCriticalSpecs(standardizedName, m.name));
 
       if (existing) {
         const oldPrice = Math.round(existing.gettingPrice || 0);
@@ -5253,7 +5422,7 @@
       showToast("Master Price Sheet updated in ALL-CAPS!", "emerald");
     }
 
-    function deleteMasterItem(itemId) {
+    async function deleteMasterItem(itemId) {
       if (!isAdminUser()) {
         showToast("Only Admin (Ashwin) can delete master items.", "amber");
         return;
@@ -5264,8 +5433,11 @@
         recordDeletedId(target.normKey);
       }
       state.masterItems = state.masterItems.filter(m => m.id !== itemId);
-      persistDatabaseToStorage();
+      saveLocalOnly();
       refreshAllViews();
+      if (state.cloudSyncUrl) {
+        await pushDirectSnapshotToCloud();
+      }
       syncMasterAndPrebuiltsToGoogleSheet(true);
       showToast("Item deleted from Master Sheet.", "amber");
     }
