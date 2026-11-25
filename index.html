@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Media Faktory — PC Quote & Operations Suite</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0%25' y1='100%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%23831843'/%3E%3Cstop offset='50%25' stop-color='%23be185d'/%3E%3Cstop offset='100%25' stop-color='%23ea580c'/%3E%3C/linearGradient%3E%3ClinearGradient id='g2' x1='0%25' y1='100%25' x2='100%25' y2='0%25'%3E%3Cstop offset='0%25' stop-color='%234c1d95'/%3E%3Cstop offset='100%25' stop-color='%239d174d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='%23031618'/%3E%3Cpolygon points='14,10 14,68 27,77 27,32 52,47 89,23 89,10 52,34' fill='%23ffffff'/%3E%3Cpolygon points='53,58 89,35 89,49 53,72' fill='url(%23g1)'/%3E%3Cpolygon points='53,81 64,74 64,87 53,94' fill='url(%23g2)'/%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,20 +23,10 @@
     }
   </script>
   <style>
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0f172a;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #475569;
-    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
     .wa-bg {
       background-color: #0b141a;
       background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 0);
@@ -76,7 +67,7 @@
         <p class="text-xs text-slate-400 mt-1">Sign in with your team username &amp; password</p>
       </div>
 
-      <form onsubmit="handleTeamLogin(event)" class="space-y-4 text-xs">
+      <form id="teamLoginForm" onsubmit="return handleTeamLogin(event)" class="space-y-4 text-xs">
         <div>
           <label class="block font-semibold text-slate-300 mb-1.5">Username</label>
           <input type="text" id="loginUsernameInput" autocomplete="username" placeholder="e.g., ashwin, shaheer, athulya, rinoj..." required
@@ -211,8 +202,6 @@
   <!-- TAB 1: ENQUIRIES & FOLLOW-UPS (GOOGLE SHEETS BACKEND LEDGER)            -->
   <!-- ======================================================================= -->
   <section id="workspace_enquiries" class="workspace-panel flex flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-6 flex-col gap-5">
-
-    <!-- Top KPI & Quick-Filter Strip -->
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
       <button type="button" onclick="setEnquiryQuickFilter('OVERDUE')" class="text-left bg-[#1e293b] hover:bg-red-950/30 border border-red-500/35 rounded-2xl p-3.5 transition cursor-pointer shadow-lg">
         <div class="text-[11px] font-semibold text-red-400 uppercase tracking-wider">Overdue Follow-Ups</div>
@@ -246,10 +235,7 @@
       </div>
     </div>
 
-    <!-- Main 2-Column Enquiries Workspace -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-
-      <!-- LEFT COLUMN (4 cols): 10-Second Quick-Add / Edit Enquiry Form -->
       <section class="lg:col-span-4 bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 shadow-xl lg:sticky lg:top-20">
         <div class="flex items-center justify-between mb-3.5">
           <h2 id="enqFormTitle" class="text-sm font-bold text-white flex items-center gap-2">
@@ -405,7 +391,6 @@
         </div>
       </section>
 
-      <!-- RIGHT COLUMN (8 cols): Searchable Live Enquiry Feed -->
       <section class="lg:col-span-8 flex flex-col gap-4">
         <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-3.5 shadow-xl grid grid-cols-1 sm:grid-cols-12 gap-2.5">
           <div class="sm:col-span-5">
@@ -436,7 +421,6 @@
 
         <div id="enquiriesFeedContainer" class="flex flex-col gap-3"></div>
       </section>
-
     </div>
   </section>
 
@@ -444,11 +428,7 @@
   <!-- TAB 2: QUOTE GENERATOR                                                  -->
   <!-- ======================================================================= -->
   <main id="workspace_generator" class="workspace-panel hidden flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-6 grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-
-    <!-- LEFT PANEL: Builder & Controls (7 cols on lg) -->
     <div class="lg:col-span-7 flex flex-col gap-5">
-
-      <!-- Linked Enquiry Banner -->
       <div id="linkedEnquiryBanner" class="hidden bg-cyan-950/50 border border-cyan-500/45 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-2 shadow-lg">
         <div class="flex items-center gap-2 text-xs text-cyan-100">
           <span class="px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/35">🔗 LINKED ENQUIRY</span>
@@ -585,7 +565,7 @@
               <span class="text-[10px] font-mono text-emerald-400">Range: 5.0% – 10.0%</span>
             </div>
             <div class="relative">
-              <input type="number" id="targetProfitInput" step="0.1" min="0" max="400" value="5.08" oninput="setTargetProfitMargin(parseFloat(this.value) || 0)"
+              <input type="number" id="targetProfitInput" step="0.1" min="0" max="400" value="6.78" oninput="setTargetProfitMargin(parseFloat(this.value) || 0)"
                 class="w-full bg-[#1e293b] border border-[#334155] focus:border-emerald-500 rounded-lg px-3 py-1.5 text-xs font-mono font-bold text-emerald-300 outline-none" />
               <span class="absolute right-3 top-1.5 text-xs text-slate-400">%</span>
             </div>
@@ -597,7 +577,7 @@
               <span class="text-[10px] font-mono text-amber-400">Min Floor: 23.9%</span>
             </div>
             <div class="relative">
-              <input type="number" id="customMarginInput" step="0.1" min="0" max="500" value="24" oninput="setGlobalMargin(parseFloat(this.value) || 0, 'total')"
+              <input type="number" id="customMarginInput" step="0.1" min="0" max="500" value="26" oninput="setGlobalMargin(parseFloat(this.value) || 0, 'total')"
                 class="w-full bg-[#1e293b] border border-[#334155] focus:border-amber-500 rounded-lg px-3 py-1.5 text-xs font-mono font-bold text-amber-300 outline-none" />
               <span class="absolute right-3 top-1.5 text-xs text-slate-400">%</span>
             </div>
@@ -630,7 +610,7 @@
 
         <div id="parserDrawerBody" class="px-4 sm:px-5 pb-4 pt-2 border-t border-[#334155]">
           <p class="text-xs text-slate-300 mb-2">
-            Paste raw distributor lines in <strong>any order</strong> — automatically formats names to <strong>ALL CAPS</strong>, catches spelling/word-order duplicates against your Master Sheet, and sorts into standard build order.
+            Paste raw distributor lines in <strong>any order</strong> — automatically formats names to <strong>ALL CAPS</strong>, catches spelling/word-order duplicates against your Master Sheet (while preserving capacity/model differences), and sorts into standard build order.
           </p>
           <textarea id="rawPasteInput" rows="4" placeholder="CABINET DEEPCOOL CG530 4F 4300+&#10;PowerColor Reaper RX9060XT 8GB GDDR6 53940/-&#10;PROCESSOR AMD RYZEN 5 7600X 15000+&#10;MOTHERBOARD MSI B650M GAMING WIFI DDR5 9200+&#10;2x RAM 16GB ADATA XPG LANCER BLADE DDR5 5600MHZ 22500+"
             class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl p-3 text-xs font-mono text-slate-100 placeholder-slate-500 outline-none transition mb-3"></textarea>
@@ -658,7 +638,7 @@
               <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
               3. System Components & Inline Master Search
             </h2>
-            <p class="text-[11px] text-slate-400 mt-0.5">Type in any component box to search your <strong class="text-cyan-300">Master Price Sheet</strong> (with typo matching), or click <strong class="text-emerald-300">+</strong> on any row to insert below.</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Type in any component box to search your <strong class="text-cyan-300">Master Price Sheet</strong>, or click <strong class="text-emerald-300">+</strong> on any row to insert below.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <button type="button" onclick="sortCurrentComponentsStandardOrder()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/35 transition cursor-pointer" title="Sort all components into standard build order">
@@ -698,13 +678,10 @@
 
         <div id="highlightsListContainer" class="flex flex-col gap-2.5"></div>
       </section>
-
     </div>
 
     <!-- RIGHT PANEL: Financial Dashboard & Live WhatsApp Quote Preview (5 cols on lg) -->
     <div class="lg:col-span-5 lg:sticky lg:top-20 flex flex-col gap-4">
-
-      <!-- 5. Internal Staff Financial Dashboard -->
       <section class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 shadow-xl">
         <div class="flex items-center justify-between mb-3">
           <span class="text-[11px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
@@ -736,7 +713,6 @@
         </div>
       </section>
 
-      <!-- Export & Auto-Sync Action Buttons -->
       <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-3.5 shadow-xl flex flex-col gap-2.5">
         <label class="flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-[#0f172a] border border-[#334155] text-[11px] text-slate-300 cursor-pointer">
           <span>Auto-log / update <strong class="text-emerald-300">Enquiry Register &amp; Google Sheet</strong> on Save</span>
@@ -767,7 +743,6 @@
         </div>
       </div>
 
-      <!-- Live WhatsApp Preview Card -->
       <div class="rounded-2xl overflow-hidden border border-[#334155] shadow-2xl flex flex-col">
         <div class="bg-[#1f2c34] px-4 py-3 flex items-center justify-between border-b border-[#334155]">
           <div class="flex items-center gap-2.5">
@@ -796,12 +771,11 @@
           </div>
         </div>
       </div>
-
     </div>
   </main>
 
   <!-- ======================================================================= -->
-  <!-- TAB 3: SAVED QUOTATIONS & CUSTOMER REVISIONS (MAIN WORKSPACE TAB)       -->
+  <!-- TAB 3: SAVED QUOTATIONS & CUSTOMER REVISIONS ARCHIVE                    -->
   <!-- ======================================================================= -->
   <section id="workspace_quotations" class="workspace-panel hidden flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-6 flex-col gap-5">
     <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 shadow-xl">
@@ -810,39 +784,43 @@
           <div class="flex items-center gap-2">
             <h2 class="text-base sm:text-lg font-bold text-white">Saved Quotations &amp; Customer Revisions</h2>
             <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-              AUTO-REVISION TRACKING (-REV1, -REV2...)
+              AUTO-GROUPED BY REVISION (-REV1, -REV2...)
             </span>
           </div>
-          <p class="text-xs text-slate-400 mt-0.5">All generated quotations are saved automatically. Repeat quotes for the same customer are grouped as <code class="text-amber-300">-REV1, -REV2</code> for effortless 1-click editing.</p>
+          <p class="text-xs text-slate-400 mt-0.5">Click <strong class="text-emerald-300">✏️ Edit / Revise</strong> on any quotation to tweak parts and automatically save as the next revision.</p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
-          <button type="button" onclick="startBrandNewQuoteFromArchive()"
-            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow transition cursor-pointer">
-            <span>+ Create New Quotation</span>
-          </button>
-        </div>
+        <button type="button" onclick="startBrandNewQuoteFromArchive()"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow transition cursor-pointer">
+          <span>+ Create New Quotation</span>
+        </button>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-3 border-t border-[#334155]">
-        <div class="sm:col-span-5">
-          <input type="text" id="qtSearchInput" placeholder="Search Quote # (MF-2026-...), Customer Name, Phone, Build Title, or CPU/GPU..." oninput="renderQuotationsWorkspace()"
+        <div class="sm:col-span-4">
+          <input type="text" id="qtSearchInput" placeholder="Search Quote # (MF-2026-101), customer, phone, CPU, GPU..." oninput="renderQuotationsWorkspace()"
             class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" />
         </div>
         <div class="sm:col-span-3">
+          <select id="qtStaffFilter" onchange="renderQuotationsWorkspace()"
+            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-cyan-300 font-semibold outline-none">
+            <option value="ALL">All Staff Members</option>
+          </select>
+        </div>
+        <div class="sm:col-span-2">
           <select id="qtBranchFilter" onchange="renderQuotationsWorkspace()"
-            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-2.5 py-2 text-xs text-slate-200 outline-none">
+            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white outline-none">
             <option value="ALL">All Branches</option>
             <option value="Calicut">Calicut Branch</option>
             <option value="Kochi">Kochi Branch</option>
           </select>
         </div>
-        <div class="sm:col-span-4">
+        <div class="sm:col-span-3">
           <select id="qtSortSelect" onchange="renderQuotationsWorkspace()"
-            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-2.5 py-2 text-xs text-emerald-300 font-semibold outline-none">
-            <option value="newest">Sort: Latest Updated First</option>
-            <option value="price_desc">Sort: Highest Quote Total</option>
-            <option value="price_asc">Sort: Lowest Quote Total</option>
+            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-emerald-300 font-semibold outline-none">
+            <option value="newest">Sort: Newest Updated</option>
+            <option value="price_desc">Quote Total: High to Low</option>
+            <option value="price_asc">Quote Total: Low to High</option>
           </select>
         </div>
       </div>
@@ -852,14 +830,76 @@
   </section>
 
   <!-- ======================================================================= -->
-  <!-- TAB 4: PRE-BUILT PC SETS (WEEKLY & PRICE-SORTED CATALOG)                -->
+  <!-- TAB 4: PRE-BUILT PC SETS (PRICE-SORTED CATALOG)                         -->
   <!-- ======================================================================= -->
   <section id="workspace_prebuilts" class="workspace-panel hidden flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-6 flex-col gap-5">
     <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 shadow-xl">
       <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
         <div>
           <div class="flex items-center gap-2">
-            <h2 class="text-base sm:text-lg font-bold text-white">Pre-Built PC Sets — Weekly & Price-Sorted Sheet</h2>
+            <h2 class="text-base sm:text-lg font-bold text-white">Pre-Built PC Sets — Price-Sorted Catalog</h2>
+            <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+              EXTERNAL ITEMS AUTO-STRIPPED • BUILD # +1
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">All generated quotations automatically strip Monitors, KB/Mouse, UPS &amp; Speakers and save as sequentially numbered Pre-Built PC sets (<code class="text-cyan-300">Build #1, #2, #3...</code>).</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="syncMasterAndPrebuiltsToGoogleSheet(false)"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#0f172a] hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 transition cursor-pointer" title="Sync Pre-Built Sets &amp; Master Sheet to Google Sheets tabs">
+            <span>🔄 Sync to Google Sheet</span>
+          </button>
+          <button type="button" onclick="exportPrebuiltsCSV()"
+            class="admin-only-control inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow transition cursor-pointer">
+            <span>Export Pre-Built PCs Sheet (CSV/Excel)</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-3 border-t border-[#334155]">
+        <div class="sm:col-span-5">
+          <input type="text" id="prebuiltSearchInput" placeholder="Search Build #, title, CPU, GPU, RAM..." oninput="renderPrebuiltSets()"
+            class="w-full bg-[#0f172a] border border-[#334155] focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" />
+        </div>
+        <div class="sm:col-span-3">
+          <select id="prebuiltUseCaseFilter" onchange="renderPrebuiltSets()"
+            class="w-full bg-[#0f172a] border border-[#334155] focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-white outline-none">
+            <option value="ALL">All Use-Cases</option>
+            <option value="gaming">🎮 Gaming</option>
+            <option value="vfx">🎬 VFX &amp; 3D Rendering</option>
+            <option value="autocad">📐 AutoCAD &amp; Drafting</option>
+            <option value="editing">📸 Photo / Video Editing</option>
+            <option value="printing">🖨️ Digital Printing</option>
+            <option value="office">💼 Office &amp; Everyday</option>
+          </select>
+        </div>
+        <div class="sm:col-span-3">
+          <select id="prebuiltSortSelect" onchange="renderPrebuiltSets()"
+            class="w-full bg-[#0f172a] border border-[#334155] focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-cyan-300 font-semibold outline-none">
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+            <option value="build_desc">Newest Build # First</option>
+          </select>
+        </div>
+        <div class="sm:col-span-1 flex items-center justify-center bg-[#0f172a] border border-[#334155] rounded-xl px-2 py-2 text-xs font-mono font-bold text-cyan-300" title="Visible Pre-Built Sets">
+          <span id="prebuiltVisibleCount">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="prebuiltWeeksContainer" class="flex flex-col gap-4"></div>
+  </section>
+
+  <!-- ======================================================================= -->
+  <!-- TAB 4: PRE-BUILT PC SETS (PRICE-SORTED CATALOG)                         -->
+  <!-- ======================================================================= -->
+  <section id="workspace_prebuilts" class="workspace-panel hidden flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-6 flex-col gap-5">
+    <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 shadow-xl">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-base sm:text-lg font-bold text-white">Pre-Built PC Sets — Price-Sorted Catalog</h2>
             <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
               EXTERNAL ITEMS AUTO-STRIPPED • BUILD # +1
             </span>
@@ -881,44 +921,35 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-3 border-t border-[#334155]">
         <div class="sm:col-span-4">
-          <label class="block text-[11px] font-medium text-slate-400 mb-1">Filter by ISO Week</label>
-          <select id="prebuiltWeekFilter" onchange="renderPrebuiltSets()"
-            class="w-full bg-[#0f172a] border border-[#334155] focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-white outline-none">
-            <option value="ALL">All Weeks (Grouped Weekly)</option>
+          <input type="text" id="qtSearchInput" placeholder="Search Quote # (MF-2026-101), customer, phone, CPU, GPU..." oninput="renderQuotationsWorkspace()"
+            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" />
+        </div>
+        <div class="sm:col-span-3">
+          <select id="qtStaffFilter" onchange="renderQuotationsWorkspace()"
+            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-cyan-300 font-semibold outline-none">
+            <option value="ALL">All Staff Members</option>
+          </select>
+        </div>
+        <div class="sm:col-span-2">
+          <select id="qtBranchFilter" onchange="renderQuotationsWorkspace()"
+            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white outline-none">
+            <option value="ALL">All Branches</option>
+            <option value="Calicut">Calicut</option>
+            <option value="Kochi">Kochi</option>
           </select>
         </div>
         <div class="sm:col-span-3">
-          <label class="block text-[11px] font-medium text-slate-400 mb-1">Use-Case Category</label>
-          <select id="prebuiltUseCaseFilter" onchange="renderPrebuiltSets()"
-            class="w-full bg-[#0f172a] border border-[#334155] focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-white outline-none">
-            <option value="ALL">All Categories</option>
-            <option value="gaming">🎮 Gaming</option>
-            <option value="vfx">🎬 VFX & 3D</option>
-            <option value="autocad">📐 AutoCAD & CAD</option>
-            <option value="editing">📸 Photo / Video Editing</option>
-            <option value="printing">🖨️ Digital Printing</option>
-            <option value="office">💼 Office & Everyday</option>
+          <select id="qtSortSelect" onchange="renderQuotationsWorkspace()"
+            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-emerald-300 font-semibold outline-none">
+            <option value="newest">Sort: Newest Updated</option>
+            <option value="price_desc">Quote Total: High to Low</option>
+            <option value="price_asc">Quote Total: Low to High</option>
           </select>
-        </div>
-        <div class="sm:col-span-3">
-          <label class="block text-[11px] font-medium text-slate-400 mb-1">Sort Order (Within Week)</label>
-          <select id="prebuiltSortSelect" onchange="renderPrebuiltSets()"
-            class="w-full bg-[#0f172a] border border-[#334155] focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-cyan-300 font-semibold outline-none">
-            <option value="price_asc">Price: Low to High (Default)</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="build_desc">Build Number: Newest First</option>
-          </select>
-        </div>
-        <div class="sm:col-span-2 flex items-end">
-          <div class="w-full bg-[#0f172a] border border-[#334155] rounded-xl px-3 py-2 text-center">
-            <span class="text-[10px] text-slate-400 block">Showing Sets</span>
-            <span id="prebuiltVisibleCount" class="text-xs font-mono font-bold text-white">0</span>
-          </div>
         </div>
       </div>
     </div>
 
-    <div id="prebuiltWeeksContainer" class="flex flex-col gap-6"></div>
+    <div id="quotationsWorkspaceList" class="flex flex-col gap-4"></div>
   </section>
 
   <!-- ======================================================================= -->
@@ -931,16 +962,20 @@
           <div class="flex items-center gap-2">
             <h2 class="text-base sm:text-lg font-bold text-white">Master Component Price Sheet (Distributor Getting Prices)</h2>
             <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
-              FUZZY DEDUPLICATED &amp; ALL-CAPS
+              CAPACITY-SAFE DEDUPLICATED &amp; ALL-CAPS
             </span>
           </div>
-          <p class="text-xs text-slate-400 mt-0.5">Every generated quote automatically upserts component getting prices here using token fingerprinting &amp; spelling similarity matching so minor typos never create duplicate entries.</p>
+          <p class="text-xs text-slate-400 mt-0.5">Select any 2+ rows below to <strong class="text-cyan-300">Merge Selected</strong> manually, or run automatic deduplication.</p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="manualMergeSelectedBtn" onclick="openManualMergeModal()"
+            class="admin-only-control hidden inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-950/50 transition cursor-pointer">
+            <span>🔗 Merge Selected (<span id="selectedMasterCountSpan">0</span>)</span>
+          </button>
           <button type="button" onclick="openDeduplicateModal()"
-            class="admin-only-control inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-600/25 hover:bg-purple-600/40 text-purple-200 border border-purple-500/45 transition cursor-pointer" title="Safely merge spelling/word-order duplicates and standardize all names to ALL-CAPS">
-            <span>🧹 Deduplicate &amp; ALL-CAPS</span>
+            class="admin-only-control inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-600/25 hover:bg-purple-600/40 text-purple-200 border border-purple-500/45 transition cursor-pointer" title="Safely merge exact/typo duplicates without merging different storage sizes or models">
+            <span>🧹 Auto-Deduplicate &amp; ALL-CAPS</span>
           </button>
           <button type="button" onclick="syncMasterAndPrebuiltsToGoogleSheet(false)"
             class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#0f172a] hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 transition cursor-pointer">
@@ -992,6 +1027,9 @@
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="bg-[#0f172a] border-b border-[#334155] text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <th class="py-3 px-3 w-10 text-center">
+                <input type="checkbox" id="masterSelectAllCheckbox" onchange="toggleSelectAllVisibleMaster(this.checked)" class="accent-cyan-500 cursor-pointer" title="Select / Deselect Visible" />
+              </th>
               <th class="py-3 px-4">Category</th>
               <th class="py-3 px-4">Component Model & Specs</th>
               <th class="py-3 px-4">Type</th>
@@ -1315,8 +1353,47 @@
   </section>
 
   <!-- ======================================================================= -->
-  <!-- MODALS (DEDUPLICATE, MASTER PICKER, BULK IMPORT, BACKUP/SYNC, RESET)    -->
+  <!-- MODALS                                                                  -->
   <!-- ======================================================================= -->
+
+  <!-- Manual Select & Merge Master Items Modal -->
+  <div id="manualMergeModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="bg-[#1e293b] border border-[#334155] rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl">
+      <div class="px-5 py-4 border-b border-[#334155] flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-white">🔗 Merge Selected Master Sheet Components</h3>
+          <p class="text-xs text-slate-400">Choose which component record to keep as the primary ALL-CAPS item; others will be removed cleanly.</p>
+        </div>
+        <button type="button" onclick="closeModal('manualMergeModal')" class="p-1.5 rounded-lg text-slate-400 hover:text-white cursor-pointer">✕</button>
+      </div>
+      <div class="p-5 space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 font-semibold mb-2">1. Select Primary Item to Keep:</label>
+          <div id="manualMergeCandidatesList" class="max-h-52 overflow-y-auto space-y-2 pr-1"></div>
+        </div>
+
+        <div>
+          <label class="block text-slate-300 font-semibold mb-1">2. Final Standardized Name (ALL-CAPS):</label>
+          <input type="text" id="manualMergeFinalNameInput" class="w-full bg-[#0f172a] border border-cyan-500/50 rounded-xl px-3 py-2 text-white uppercase font-semibold outline-none" />
+        </div>
+
+        <label class="flex items-start gap-2.5 p-3 rounded-xl bg-[#0f172a] border border-[#334155] cursor-pointer">
+          <input type="checkbox" id="manualMergeUpdateHistory" checked class="mt-0.5 accent-emerald-500 cursor-pointer" />
+          <div>
+            <div class="font-semibold text-white">Update matching component names in Saved Quotes &amp; Pre-Built PC Sets to this clean name</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Historical quote prices and totals remain 100% unchanged.</div>
+          </div>
+        </label>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-[#334155]">
+          <button type="button" onclick="closeModal('manualMergeModal')" class="px-4 py-2 rounded-xl bg-[#0f172a] text-slate-300 border border-[#334155] cursor-pointer">Cancel</button>
+          <button type="button" onclick="executeManualMasterMerge()" class="px-4 py-2 rounded-xl font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow cursor-pointer">
+            🔗 Merge into Primary Item
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Safe Deduplicate & ALL-CAPS Standardize Modal -->
   <div id="deduplicateModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
@@ -1324,14 +1401,12 @@
       <div class="px-5 py-4 border-b border-[#334155] flex items-center justify-between">
         <div>
           <h3 class="text-base font-bold text-white">🧹 Safe Master Sheet Deduplication &amp; ALL-CAPS Standardizer</h3>
-          <p class="text-xs text-slate-400">Merges duplicate items caused by spelling/word-order typos while keeping latest getting prices &amp; protecting all Saved Quotes and Pre-Built Sets</p>
+          <p class="text-xs text-slate-400">Merges true spelling/word-order duplicates while keeping different capacities (`1TB` vs `2TB`), wattages &amp; models separate</p>
         </div>
         <button type="button" onclick="closeModal('deduplicateModal')" class="p-1.5 rounded-lg text-slate-400 hover:text-white cursor-pointer">✕</button>
       </div>
       <div class="p-5 space-y-4 text-xs">
-        <div id="dedupePreviewSummary" class="bg-[#0f172a] border border-[#334155] rounded-xl p-3.5 space-y-2">
-          <!-- Populated dynamically -->
-        </div>
+        <div id="dedupePreviewSummary" class="bg-[#0f172a] border border-[#334155] rounded-xl p-3.5 space-y-2"></div>
 
         <label class="flex items-start gap-2.5 p-3 rounded-xl bg-[#0f172a] border border-[#334155] cursor-pointer">
           <input type="checkbox" id="dedupeUpdateHistoricalNames" checked class="mt-0.5 accent-emerald-500 cursor-pointer" />
@@ -1463,7 +1538,7 @@
     </div>
   </div>
 
-  <!-- Backup, Restore & Optional Cloud Sync Modal -->
+  <!-- Backup, Restore & Cloud Sync Modal -->
   <div id="backupModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
     <div class="bg-[#1e293b] border border-[#334155] rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl">
       <div class="px-5 py-4 border-b border-[#334155] flex items-center justify-between">
@@ -1594,7 +1669,7 @@
     }
 
     function handleTeamLogin(event) {
-      if (event) event.preventDefault();
+      if (event && event.preventDefault) event.preventDefault();
       const rawUser = (document.getElementById("loginUsernameInput").value || "").trim().toLowerCase();
       const rawPwd = document.getElementById("loginPasswordInput").value || "";
       const errBox = document.getElementById("loginErrorBox");
@@ -1602,7 +1677,7 @@
       const account = TEAM_USERS[rawUser];
       if (!account || rawPwd !== getExpectedPassword(rawUser)) {
         errBox.classList.remove("hidden");
-        return;
+        return false;
       }
 
       errBox.classList.add("hidden");
@@ -1611,6 +1686,7 @@
       localStorage.setItem(DB_KEYS.OWNER_PREF, currentUser.displayName);
       applySessionUiAndPermissions();
       showToast(`Welcome, ${currentUser.displayName}!`, "emerald");
+      return false;
     }
 
     function restoreTeamSession() {
@@ -1835,7 +1911,7 @@
     };
 
     // =========================================================================
-    // 3. ALL-CAPS STANDARDIZER & FUZZY DEDUPLICATION ENGINE
+    // 3. ALL-CAPS STANDARDIZER & CAPACITY/MODEL-SAFE FUZZY DEDUPLICATION
     // =========================================================================
     const STOP_TOKENS = new Set([
       "PROCESSOR", "CPU", "MOTHERBOARD", "MOBO", "RAM", "MEMORY", "SSD", "HDD",
@@ -1846,23 +1922,81 @@
       "CORES", "THREADS", "PLUS", "TEMPERED", "GLASS", "PANORAMIC", "M2"
     ]);
 
-    function buildTokenFingerprint(rawName) {
-      let s = String(rawName || "")
+    function normalizeHardwareUnits(rawName) {
+      return String(rawName || "")
         .toUpperCase()
         .replace(/\|.*$/, "")
         .replace(/\b1000\s*GB\b/g, "1TB")
         .replace(/\b2000\s*GB\b/g, "2TB")
         .replace(/\b4000\s*GB\b/g, "4TB")
-        .replace(/\b(\d+)\s*(GB|TB|MHZ|W|HZ|MM)\b/g, "$1$2")
+        .replace(/\b8000\s*GB\b/g, "8TB")
+        .replace(/\b(\d+)\s*(GB|TB|MHZ|W|HZ|MM|VA)\b/g, "$1$2")
         .replace(/\bDDR\s*([45])\b/g, "DDR$1")
         .replace(/\bRX\s*(\d{4})\s*(XT|GRE|XTX)?\b/g, "RX$1$2")
         .replace(/\bRTX\s*(\d{4})\s*(TI|SUPER)?\b/g, "RTX$1$2")
+        .replace(/\bGTX\s*(\d{4})\s*(TI|SUPER)?\b/g, "GTX$1$2");
+    }
+
+    function buildTokenFingerprint(rawName) {
+      const s = normalizeHardwareUnits(rawName)
         .replace(/[^A-Z0-9]+/g, " ")
         .trim();
 
       const tokens = s.split(/\s+/).filter(t => t && !STOP_TOKENS.has(t));
       const uniqueSorted = Array.from(new Set(tokens)).sort();
       return uniqueSorted.join("|");
+    }
+
+    function extractCriticalSpecSignature(rawName) {
+      const s = normalizeHardwareUnits(rawName).replace(/[^A-Z0-9]+/g, " ").trim();
+      const tokens = s.split(/\s+/).filter(Boolean);
+
+      const capacities = [];
+      const wattages = [];
+      const frequencies = [];
+      const ddrGens = [];
+      const modelCodes = [];
+
+      tokens.forEach(tok => {
+        if (/^\d+(GB|TB)$/.test(tok)) {
+          capacities.push(tok);
+        } else if (/^\d+(W|VA)$/.test(tok)) {
+          wattages.push(tok);
+        } else if (/^\d+(MHZ|HZ|MM)$/.test(tok)) {
+          frequencies.push(tok);
+        } else if (/^DDR[345]$/.test(tok)) {
+          ddrGens.push(tok);
+        } else if (/\d/.test(tok) && !STOP_TOKENS.has(tok) && tok !== "80") {
+          modelCodes.push(tok);
+        }
+      });
+
+      const hasWifi = tokens.includes("WIFI") ? "WIFI" : "";
+      const psuTier = tokens.find(t => ["BRONZE", "GOLD", "PLATINUM", "SILVER"].includes(t)) || "";
+
+      return {
+        capacities: Array.from(new Set(capacities)).sort().join(","),
+        wattages: Array.from(new Set(wattages)).sort().join(","),
+        frequencies: Array.from(new Set(frequencies)).sort().join(","),
+        ddrGens: Array.from(new Set(ddrGens)).sort().join(","),
+        modelCodes: Array.from(new Set(modelCodes)).sort().join(","),
+        hasWifi,
+        psuTier
+      };
+    }
+
+    function haveCompatibleCriticalSpecs(nameA, nameB) {
+      const sigA = extractCriticalSpecSignature(nameA);
+      const sigB = extractCriticalSpecSignature(nameB);
+
+      if (sigA.capacities !== sigB.capacities) return false;
+      if (sigA.wattages !== sigB.wattages) return false;
+      if (sigA.frequencies !== sigB.frequencies) return false;
+      if (sigA.ddrGens !== sigB.ddrGens) return false;
+      if (sigA.psuTier && sigB.psuTier && sigA.psuTier !== sigB.psuTier) return false;
+      if (sigA.modelCodes !== sigB.modelCodes) return false;
+
+      return true;
     }
 
     function computeLevenshteinDistance(a, b) {
@@ -1914,21 +2048,21 @@
       const fp = buildTokenFingerprint(rawName);
       if (!fp) return null;
 
-      // 1. Exact order-independent token fingerprint match
       const exactFpMatch = (state.masterItems || []).find(m => {
+        if (category && category !== "Other" && m.category !== category) return false;
         const mFp = buildTokenFingerprint(m.name);
-        return mFp === fp && (!category || category === "Other" || m.category === category);
+        return mFp === fp && haveCompatibleCriticalSpecs(rawName, m.name);
       });
       if (exactFpMatch) return { item: exactFpMatch, score: 1.0 };
 
-      // 2. Fuzzy spelling typo match (>= 0.86 similarity within same category)
       let bestMatch = null;
       let bestScore = 0;
       (state.masterItems || []).forEach(m => {
         if (category && category !== "Other" && m.category !== category) return;
+        if (!haveCompatibleCriticalSpecs(rawName, m.name)) return;
         const mFp = buildTokenFingerprint(m.name);
         const score = computeFingerprintSimilarity(fp, mFp);
-        if (score >= 0.86 && score > bestScore) {
+        if (score >= 0.85 && score > bestScore) {
           bestScore = score;
           bestMatch = m;
         }
@@ -1937,10 +2071,6 @@
       return bestMatch ? { item: bestMatch, score: bestScore } : null;
     }
 
-    /**
-     * Standardizes any component string into Media Faktory's strict ALL-CAPS template
-     * and resolves spelling/word-order variants against the Master Price Sheet.
-     */
     function standardizeAllCapsComponentName(rawName, category = "", skipMasterLookup = false) {
       let input = String(rawName || "").trim();
       if (!input) return "";
@@ -1952,7 +2082,6 @@
         }
       }
 
-      // Preserve existing "| X CORES / Y THREADS" if already present, normalize case
       let suffixPipe = "";
       if (input.includes("|")) {
         const parts = input.split("|");
@@ -1966,7 +2095,6 @@
         .replace(/\s+/g, " ")
         .trim();
 
-      // Standardize units & common hardware tokens
       upper = upper
         .replace(/\b(\d+)\s*GB\b/g, "$1GB")
         .replace(/\b(\d+)\s*TB\b/g, "$1TB")
@@ -1982,11 +2110,9 @@
         .replace(/\bRX\s*(\d{4})\s*(XT|GRE|XTX)?\b/g, (_, num, ext) => ext ? `RX ${num} ${ext}` : `RX ${num}`)
         .replace(/\bRTX\s*(\d{4})\s*(TI|SUPER)?\b/g, (_, num, ext) => ext ? `RTX ${num} ${ext}` : `RTX ${num}`);
 
-      // Common typo auto-corrections
       const typoFixes = [
         [/\bVENGENCE\b/g, "VENGEANCE"],
         [/\bBARACUDA\b/g, "BARRACUDA"],
-        [/\bGAMING\s+PLUS\s+WIFI\b/g, "GAMING PLUS WIFI"],
         [/\bADATA\s+LANCER\b/g, "ADATA XPG LANCER"],
         [/\bWD\s+SN(\d{4})\b/g, "WD BLACK SN$1"],
         [/\bDEEP\s*COOL\b/g, "DEEPCOOL"],
@@ -1997,7 +2123,6 @@
         upper = upper.replace(rx, rep);
       });
 
-      // Category-specific structural suffixes
       if (category === "Storage (SSD)" && !/\bSSD\b/.test(upper)) {
         upper = `${upper} NVME M.2 SSD`.replace(/\bNVME\s+NVME\b/g, "NVME");
       } else if (category === "Storage (HDD)" && !/\bHDD\b/.test(upper)) {
@@ -2023,7 +2148,6 @@
         upper = `${upper} SPEAKERS`;
       }
 
-      // Append CPU Core / Thread count in ALL-CAPS
       const cpuSpecsAllCaps = {
         "5600X": "6 CORES / 12 THREADS",
         "5700X": "8 CORES / 16 THREADS",
@@ -2060,10 +2184,6 @@
       return (upper + suffixPipe).replace(/\s+/g, " ").trim();
     }
 
-    function beautifyComponentName(rawName, category = "") {
-      return standardizeAllCapsComponentName(rawName, category, false);
-    }
-
     function beautifyAllCurrentRows() {
       state.components.forEach(row => {
         row.name = standardizeAllCapsComponentName(row.name, row.category, false);
@@ -2073,9 +2193,6 @@
       showToast("✨ All components standardized to ALL-CAPS!", "emerald");
     }
 
-    // =========================================================================
-    // 4. NON-DESTRUCTIVE MASTER SHEET DEDUPLICATION & SAFE MERGE
-    // =========================================================================
     function analyzeMasterDuplicates() {
       const clusters = [];
       const visited = new Set();
@@ -2092,9 +2209,11 @@
           if (visited.has(items[j].id)) continue;
           const cand = items[j];
           if (base.category !== cand.category) continue;
+          if (!haveCompatibleCriticalSpecs(base.name, cand.name)) continue;
+
           const candFp = buildTokenFingerprint(cand.name);
           const sim = computeFingerprintSimilarity(baseFp, candFp);
-          if (sim >= 0.86) {
+          if (sim >= 0.85) {
             group.push(cand);
             visited.add(cand.id);
           }
@@ -2120,10 +2239,10 @@
 
       let clustersHtml = "";
       if (clusters.length === 0) {
-        clustersHtml = `<div class="text-emerald-300 font-semibold">✅ Zero duplicate components detected in Master Price Sheet!</div>`;
+        clustersHtml = `<div class="text-emerald-300 font-semibold">✅ Zero duplicate components detected in Master Price Sheet! (Different capacities &amp; models are safely preserved.)</div>`;
       } else {
         clustersHtml = `
-          <div class="text-amber-300 font-bold mb-2">Found ${clusters.length} duplicate group(s) to merge safely:</div>
+          <div class="text-amber-300 font-bold mb-2">Found ${clusters.length} true duplicate group(s) to merge safely:</div>
           <div class="max-h-44 overflow-y-auto space-y-2 pr-1">
             ${clusters.map(grp => {
               const winner = grp[0];
@@ -2144,6 +2263,7 @@
         ${clustersHtml}
         <div class="pt-2 mt-2 border-t border-[#334155] text-[11px] text-slate-300">
           • <strong>${nonCapsCount}</strong> Master Sheet item(s) will be formatted to strict <strong>ALL-CAPS</strong>.<br/>
+          • Different storage sizes (e.g., <code>1TB</code> vs <code>2TB</code>), RAM sizes, wattages &amp; models are <strong>never</strong> merged.<br/>
           • All <strong>Saved Quotes</strong> and <strong>Pre-Built PC Sets</strong> keep their exact historical prices and totals.
         </div>
       `;
@@ -2151,7 +2271,7 @@
       openModal("deduplicateModal");
     }
 
-    function executeMasterDeduplication() {
+    async function executeMasterDeduplication() {
       if (!isAdminUser()) return;
 
       const updateHistoricalNames = document.getElementById("dedupeUpdateHistoricalNames").checked;
@@ -2160,29 +2280,42 @@
 
       clusters.forEach(grp => {
         const winner = grp[0];
-        winner.name = standardizeAllCapsComponentName(winner.name, winner.category, true);
-        winner.normKey = buildTokenFingerprint(winner.name);
+        const cleanWinnerName = standardizeAllCapsComponentName(winner.name, winner.category, true);
+        const winnerFp = buildTokenFingerprint(cleanWinnerName);
+        winner.name = cleanWinnerName;
+        winner.normKey = winnerFp;
         winner.updatedAt = Date.now();
 
         grp.slice(1).forEach(dup => {
           idsToRemove.add(dup.id);
           recordDeletedId(dup.id);
-          recordDeletedId(dup.normKey);
+          if (dup.normKey && dup.normKey !== winnerFp) {
+            recordDeletedId(dup.normKey);
+          }
         });
       });
 
-      state.masterItems = state.masterItems
+      const dedupedMap = new Map();
+      state.masterItems
         .filter(m => !idsToRemove.has(m.id))
-        .map(m => {
+        .forEach(m => {
           const cleanName = standardizeAllCapsComponentName(m.name, m.category, true);
-          return {
-            ...m,
-            name: cleanName,
-            normKey: buildTokenFingerprint(cleanName)
-          };
+          const fp = buildTokenFingerprint(cleanName);
+          const compositeKey = `${m.category}::${fp}`;
+          const normalizedItem = { ...m, name: cleanName, normKey: fp };
+          const existing = dedupedMap.get(compositeKey);
+          if (!existing) {
+            dedupedMap.set(compositeKey, normalizedItem);
+          } else if (Number(normalizedItem.updatedAt || 0) >= Number(existing.updatedAt || 0)) {
+            recordDeletedId(existing.id);
+            dedupedMap.set(compositeKey, normalizedItem);
+          } else {
+            recordDeletedId(normalizedItem.id);
+          }
         });
 
-      // Optionally standardize display names in Saved Quotes & Pre-Built PC Sets (prices untouched!)
+      state.masterItems = Array.from(dedupedMap.values());
+
       if (updateHistoricalNames) {
         state.savedQuotes.forEach(q => {
           (q.components || []).forEach(c => {
@@ -2196,15 +2329,19 @@
         });
       }
 
-      persistDatabaseToStorage();
+      saveLocalOnly();
       refreshAllViews();
       closeModal("deduplicateModal");
-      syncMasterAndPrebuiltsToGoogleSheet(true);
-      showToast(`✨ Merged ${idsToRemove.size} duplicate(s) & standardized all items to ALL-CAPS!`, "emerald");
+
+      if (state.cloudSyncUrl) {
+        await pushDirectSnapshotToCloud();
+      }
+      await syncMasterAndPrebuiltsToGoogleSheet(true);
+      showToast(`✨ Cleaned Master Sheet (${state.masterItems.length} unique items) & applied ALL-CAPS!`, "emerald");
     }
 
     // =========================================================================
-    // 5. PERSISTENT DATABASE & REAL-TIME MULTI-PC MERGE ENGINE
+    // 4. PERSISTENT DATABASE, INITIALIZATION & REAL-TIME MULTI-PC MERGE ENGINE
     // =========================================================================
     const DB_KEYS = {
       QUOTES: "mf_ops_saved_quotes_v4",
@@ -2226,7 +2363,7 @@
     const DEFAULT_SHEET_SECRET = "MF_SECRET_2026";
 
     let state = {
-      globalMargin: 24,
+      globalMargin: 26,
       components: [],
       highlights: [],
       enquiries: [],
@@ -2235,6 +2372,7 @@
       savedQuotes: [],
       prebuiltSets: [],
       masterItems: [],
+      selectedMasterIds: [],
       deletedIds: [],
       cloudSyncUrl: DEFAULT_CLOUD_SYNC_URL,
       sheetSyncUrl: DEFAULT_SHEET_SYNC_URL,
@@ -2245,28 +2383,8 @@
       isSyncing: false
     };
 
-    // =========================================================================
-    // 6. CORE UTILITIES & SMART REVISION NUMBERING HELPERS
-    // =========================================================================
     function uid() {
-      return "id_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7);
-    }
-
-    function formatINR(num) {
-      const val = Number(num) || 0;
-      return Math.round(val).toLocaleString("en-IN");
-    }
-
-    function formatReadableDate(isoDateStr) {
-      if (!isoDateStr) return "";
-      const parts = isoDateStr.split("-");
-      if (parts.length !== 3) return isoDateStr;
-      const dateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
-      return dateObj.toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric"
-      });
+      return "id_" + Date.now().toString(36) + "_" + Math.random().toString(36).substring(2, 8);
     }
 
     function escapeHtml(str) {
@@ -2277,143 +2395,34 @@
         .replace(/"/g, "&quot;");
     }
 
+    function formatINR(num) {
+      const val = Number(num) || 0;
+      return val.toLocaleString("en-IN", {
+        maximumFractionDigits: Number.isInteger(val) ? 0 : 2
+      });
+    }
+
+    function formatReadableDate(isoDateStr) {
+      if (!isoDateStr) return "";
+      const parts = String(isoDateStr).split("-");
+      if (parts.length !== 3) return isoDateStr;
+      const dateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      return dateObj.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      });
+    }
+
     function whatsappMarkdownToHtml(text) {
       const escaped = escapeHtml(text);
       return escaped.replace(/\*([^\*\n]+)\*/g, '<strong class="font-bold text-white">$1</strong>');
     }
 
-    function normalizeComponentKey(name) {
-      return buildTokenFingerprint(name);
-    }
-
     function isCategoryExternal(category, name = "") {
       if (EXTERNAL_CATEGORIES.has(category)) return true;
-      const upper = String(name || "").toUpperCase();
-      return /\b(MONITOR|KEYBOARD|MOUSE|UPS|PRINTER|SPEAKER|HEADSET|WEBCAM)\b/.test(upper);
-    }
-
-    function getISOWeekMeta(isoDateStr) {
-      const parts = (isoDateStr || getTodayIsoLocal()).split("-");
-      const d = new Date(Date.UTC(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])));
-      const dayNum = d.getUTCDay() || 7;
-      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-      const weekKey = `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
-
-      const monday = new Date(d);
-      monday.setUTCDate(d.getUTCDate() - 3);
-      const sunday = new Date(monday);
-      sunday.setUTCDate(monday.getUTCDate() + 6);
-      const fmt = (dt) => dt.toLocaleDateString("en-GB", { day: "2-digit", month: "short", timeZone: "UTC" });
-      return {
-        weekKey,
-        weekLabel: `Week ${weekNo}, ${d.getUTCFullYear()} (${fmt(monday)} – ${fmt(sunday)})`
-      };
-    }
-
-    function extractBaseQuoteCode(codeStr) {
-      return String(codeStr || "").trim().replace(/-REV\d+$/i, "");
-    }
-
-    function extractRevisionNumber(codeStr) {
-      const m = String(codeStr || "").trim().match(/-REV(\d+)$/i);
-      return m ? parseInt(m[1], 10) : 0;
-    }
-
-    function getNextRevisionCodeForBase(baseCode) {
-      const cleanBase = extractBaseQuoteCode(baseCode);
-      let maxRev = 0;
-      (state.savedQuotes || []).forEach(q => {
-        if (extractBaseQuoteCode(q.refCode) === cleanBase) {
-          const rev = extractRevisionNumber(q.refCode);
-          if (rev > maxRev) maxRev = rev;
-        }
-      });
-      return `${cleanBase}-REV${maxRev + 1}`;
-    }
-
-    function generateNextRefCode(isoDateStr) {
-      const year = (isoDateStr || getTodayIsoLocal()).slice(0, 4) || String(new Date().getFullYear());
-      const prefix = `MF-${year}-`;
-      let maxNum = 100;
-
-      const scan = (arr) => {
-        (arr || []).forEach(item => {
-          const baseCode = extractBaseQuoteCode(item.refCode || "");
-          if (baseCode.startsWith(prefix)) {
-            const num = parseInt(baseCode.slice(prefix.length), 10);
-            if (!isNaN(num) && num > maxNum) maxNum = num;
-          }
-        });
-      };
-
-      scan(state.savedQuotes);
-      scan(state.prebuiltSets);
-      return `${prefix}${maxNum + 1}`;
-    }
-
-    function startFreshBaseQuoteNumber() {
-      state.editingQuoteBaseCode = null;
-      const dateVal = document.getElementById("quoteDateInput").value;
-      document.getElementById("refCodeInput").value = generateNextRefCode(dateVal);
-      updateQuoteModeBadge();
-      renderPreview();
-      showToast("Assigned next new base quote number!", "emerald");
-    }
-
-    function updateQuoteModeBadge() {
-      const tag = document.getElementById("quoteModeTag");
-      if (!tag) return;
-      const refVal = (document.getElementById("refCodeInput").value || "").trim();
-      if (/-REV\d+$/i.test(refVal) || state.editingQuoteBaseCode) {
-        tag.textContent = "(Revision Mode)";
-        tag.className = "text-amber-400 text-[10px] font-bold";
-      } else {
-        tag.textContent = "(Auto +1 / REV)";
-        tag.className = "text-emerald-400 text-[10px]";
-      }
-    }
-
-    function generateNextServiceTicketCode() {
-      const year = getTodayIsoLocal().slice(0, 4) || String(new Date().getFullYear());
-      const prefix = `MF-SRV-${year}-`;
-      let maxNum = 100;
-      (state.serviceTickets || []).forEach(t => {
-        const code = String(t.ticketCode || "");
-        if (code.startsWith(prefix)) {
-          const num = parseInt(code.slice(prefix.length), 10);
-          if (!isNaN(num) && num > maxNum) maxNum = num;
-        }
-      });
-      return `${prefix}${maxNum + 1}`;
-    }
-
-    function generateNextPrebuiltBuildNumber() {
-      let maxBuildNum = 0;
-      (state.prebuiltSets || []).forEach((s, idx) => {
-        if (typeof s.buildNumber === "number" && s.buildNumber > maxBuildNum) {
-          maxBuildNum = s.buildNumber;
-        } else {
-          const m = String(s.buildName || s.title || "").match(/^Build\s*#?(\d+)/i);
-          if (m) {
-            const n = parseInt(m[1], 10);
-            if (!isNaN(n) && n > maxBuildNum) maxBuildNum = n;
-          } else if (idx + 1 > maxBuildNum) {
-            maxBuildNum = idx + 1;
-          }
-        }
-      });
-      return maxBuildNum + 1;
-    }
-
-    function onQuoteDateChange() {
-      const dateVal = document.getElementById("quoteDateInput").value;
-      const refInput = document.getElementById("refCodeInput");
-      if (!refInput.value.trim()) {
-        refInput.value = generateNextRefCode(dateVal);
-      }
-      renderPreview();
+      const u = String(name || "").toUpperCase();
+      return /\b(MONITOR|KEYBOARD|MOUSE|UPS|PRINTER|SPEAKER)\b/.test(u) && category === "Other";
     }
 
     function calculateUnitFinalPrice(row) {
@@ -2429,53 +2438,198 @@
       return calculateUnitFinalPrice(row) * qty;
     }
 
-    // =========================================================================
-    // 7. LOCAL STORAGE & REAL-TIME MULTI-PC CLOUD SYNC ENGINE
-    // =========================================================================
-    function loadDatabaseFromStorage() {
-      try {
-        state.enquiries = JSON.parse(localStorage.getItem(DB_KEYS.ENQUIRIES) || "[]");
-        state.serviceTickets = JSON.parse(localStorage.getItem(DB_KEYS.SERVICE) || "[]");
-        state.buildOrders = JSON.parse(localStorage.getItem(DB_KEYS.BUILDS) || "[]");
-        state.savedQuotes = JSON.parse(localStorage.getItem(DB_KEYS.QUOTES) || "[]");
-        state.prebuiltSets = JSON.parse(localStorage.getItem(DB_KEYS.PREBUILTS) || "[]");
-        state.masterItems = JSON.parse(localStorage.getItem(DB_KEYS.MASTER) || "[]");
-        state.deletedIds = JSON.parse(localStorage.getItem(DB_KEYS.DELETED) || "[]");
+    function getISOWeekMeta(isoDateStr) {
+      const parts = String(isoDateStr || getTodayIsoLocal()).split("-");
+      const d = parts.length === 3
+        ? new Date(Date.UTC(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])))
+        : new Date();
+      const dayNum = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+      const wk = `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, "0")}`;
+      return { weekKey: wk, weekLabel: `Week ${weekNo}, ${d.getUTCFullYear()}` };
+    }
 
-        const savedCloudUrl = localStorage.getItem(DB_KEYS.CLOUD_URL);
-        state.cloudSyncUrl = savedCloudUrl === null ? DEFAULT_CLOUD_SYNC_URL : savedCloudUrl;
-        const savedSheetUrl = localStorage.getItem(DB_KEYS.SHEET_URL);
-        if (!savedSheetUrl || savedSheetUrl === PREVIOUS_SHEET_SYNC_URL) {
-          state.sheetSyncUrl = DEFAULT_SHEET_SYNC_URL;
-          localStorage.setItem(DB_KEYS.SHEET_URL, DEFAULT_SHEET_SYNC_URL);
-        } else {
-          state.sheetSyncUrl = savedSheetUrl;
+    function extractBaseQuoteCode(refCode) {
+      return String(refCode || "").trim().replace(/-REV\d+$/i, "");
+    }
+
+    function extractRevisionNumber(refCode) {
+      const m = String(refCode || "").trim().match(/-REV(\d+)$/i);
+      return m ? (parseInt(m[1], 10) || 0) : 0;
+    }
+
+    function getNextRevisionCodeForBase(baseCode) {
+      const cleanBase = extractBaseQuoteCode(baseCode);
+      let maxRev = 0;
+      (state.savedQuotes || []).forEach(q => {
+        if (extractBaseQuoteCode(q.refCode) === cleanBase) {
+          const rev = extractRevisionNumber(q.refCode);
+          if (rev > maxRev) maxRev = rev;
         }
-        state.sheetSyncSecret = localStorage.getItem(DB_KEYS.SHEET_SECRET) || DEFAULT_SHEET_SECRET;
-      } catch {
-        state.enquiries = [];
-        state.serviceTickets = [];
-        state.buildOrders = [];
-        state.savedQuotes = [];
-        state.prebuiltSets = [];
-        state.masterItems = [];
-        state.deletedIds = [];
+      });
+      return `${cleanBase}-REV${maxRev + 1}`;
+    }
+
+    function generateNextRefCode(isoDateStr) {
+      const year = String(isoDateStr || getTodayIsoLocal()).slice(0, 4) || String(new Date().getFullYear());
+      const prefix = `MF-${year}-`;
+      let maxSeq = 100;
+      (state.savedQuotes || []).forEach(q => {
+        const base = extractBaseQuoteCode(q.refCode);
+        if (base.startsWith(prefix)) {
+          const num = parseInt(base.slice(prefix.length), 10);
+          if (!isNaN(num) && num > maxSeq) maxSeq = num;
+        }
+      });
+      return `${prefix}${maxSeq + 1}`;
+    }
+
+    function generateNextPrebuiltBuildNumber() {
+      let maxNum = 0;
+      (state.prebuiltSets || []).forEach(s => {
+        const n = parseInt(s.buildNumber, 10);
+        if (!isNaN(n) && n > maxNum) maxNum = n;
+      });
+      return maxNum + 1;
+    }
+
+    function generateNextServiceTicketCode() {
+      const year = String(new Date().getFullYear());
+      const prefix = `MF-SRV-${year}-`;
+      let maxSeq = 100;
+      (state.serviceTickets || []).forEach(t => {
+        const code = String(t.ticketCode || "");
+        if (code.startsWith(prefix)) {
+          const num = parseInt(code.slice(prefix.length), 10);
+          if (!isNaN(num) && num > maxSeq) maxSeq = num;
+        }
+      });
+      return `${prefix}${maxSeq + 1}`;
+    }
+
+    function updateQuoteModeBadge() {
+      const tag = document.getElementById("quoteModeTag");
+      if (!tag) return;
+      if (state.editingQuoteBaseCode) {
+        tag.textContent = `(Revision Mode: ${state.editingQuoteBaseCode})`;
+        tag.className = "text-amber-300 text-[10px] font-bold";
+      } else {
+        tag.textContent = "(Auto +1 / REV)";
+        tag.className = "text-emerald-400 text-[10px]";
       }
     }
 
-    function saveLocalOnly() {
-      try {
-        localStorage.setItem(DB_KEYS.ENQUIRIES, JSON.stringify(state.enquiries));
-        localStorage.setItem(DB_KEYS.SERVICE, JSON.stringify(state.serviceTickets));
-        localStorage.setItem(DB_KEYS.BUILDS, JSON.stringify(state.buildOrders));
-        localStorage.setItem(DB_KEYS.QUOTES, JSON.stringify(state.savedQuotes));
-        localStorage.setItem(DB_KEYS.PREBUILTS, JSON.stringify(state.prebuiltSets));
-        localStorage.setItem(DB_KEYS.MASTER, JSON.stringify(state.masterItems));
-        localStorage.setItem(DB_KEYS.DELETED, JSON.stringify(state.deletedIds.slice(-300)));
-      } catch {
-        // Ignore
+    function startFreshBaseQuoteNumber() {
+      const todayIso = document.getElementById("quoteDateInput").value || getTodayIsoLocal();
+      state.editingQuoteBaseCode = null;
+      document.getElementById("refCodeInput").value = generateNextRefCode(todayIso);
+      updateQuoteModeBadge();
+      renderPreview();
+      showToast(`Assigned new quote # ${document.getElementById("refCodeInput").value}`, "emerald");
+    }
+
+    function onQuoteDateChange() {
+      const newDate = document.getElementById("quoteDateInput").value;
+      if (!state.editingQuoteBaseCode && newDate) {
+        document.getElementById("refCodeInput").value = generateNextRefCode(newDate);
       }
-      updateGlobalBadges();
+      renderPreview();
+    }
+
+    function switchWorkspaceTab(tabName) {
+      document.querySelectorAll(".workspace-panel").forEach(panel => {
+        panel.classList.add("hidden");
+        panel.classList.remove("flex", "grid");
+      });
+
+      const activePanel = document.getElementById(`workspace_${tabName}`);
+      if (activePanel) {
+        activePanel.classList.remove("hidden");
+        if (tabName === "generator") {
+          activePanel.classList.add("grid");
+        } else {
+          activePanel.classList.add("flex");
+        }
+      }
+
+      document.querySelectorAll(".workspace-tab-btn").forEach(btn => {
+        btn.className = "workspace-tab-btn inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer text-slate-300 hover:text-white shrink-0";
+      });
+      const activeBtn = document.getElementById(`tabBtn_${tabName}`);
+      if (activeBtn) {
+        activeBtn.className = "workspace-tab-btn inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer bg-emerald-600 text-white shadow shrink-0";
+      }
+
+      if (tabName === "quotations") renderQuotationsWorkspace();
+      if (tabName === "prebuilts") renderPrebuiltSets();
+      if (tabName === "master") renderMasterSheet();
+      if (tabName === "service") renderServiceTickets();
+      if (tabName === "builds") renderBuildOrders();
+    }
+
+    function populateCategorySelects() {
+      const catOpts = CATEGORIES.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+      const masterCatFilter = document.getElementById("masterCategoryFilter");
+      if (masterCatFilter) masterCatFilter.innerHTML = `<option value="ALL">All Categories</option>` + catOpts;
+      const pickerCatFilter = document.getElementById("pickerCatFilter");
+      if (pickerCatFilter) pickerCatFilter.innerHTML = `<option value="ALL">All Categories</option>` + catOpts;
+      const singleMasterCat = document.getElementById("singleMasterCat");
+      if (singleMasterCat) singleMasterCat.innerHTML = catOpts;
+      const singleMasterWarranty = document.getElementById("singleMasterWarranty");
+      if (singleMasterWarranty) {
+        singleMasterWarranty.innerHTML = WARRANTIES.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");
+      }
+    }
+
+    function recordDeletedId(id) {
+      if (!id) return;
+      const set = new Set((state.deletedIds || []).map(String));
+      set.add(String(id));
+      state.deletedIds = Array.from(set).slice(-500);
+      localStorage.setItem(DB_KEYS.DELETED, JSON.stringify(state.deletedIds));
+    }
+
+    function loadDatabaseFromStorage() {
+      try {
+        state.savedQuotes = JSON.parse(localStorage.getItem(DB_KEYS.QUOTES) || "[]");
+        state.prebuiltSets = JSON.parse(localStorage.getItem(DB_KEYS.PREBUILTS) || "[]");
+        state.masterItems = JSON.parse(localStorage.getItem(DB_KEYS.MASTER) || "[]");
+        state.enquiries = JSON.parse(localStorage.getItem(DB_KEYS.ENQUIRIES) || "[]");
+        state.serviceTickets = JSON.parse(localStorage.getItem(DB_KEYS.SERVICE) || "[]");
+        state.buildOrders = JSON.parse(localStorage.getItem(DB_KEYS.BUILDS) || "[]");
+        state.deletedIds = JSON.parse(localStorage.getItem(DB_KEYS.DELETED) || "[]");
+
+        const savedCloudUrl = localStorage.getItem(DB_KEYS.CLOUD_URL);
+        if (savedCloudUrl !== null) state.cloudSyncUrl = savedCloudUrl;
+
+        const savedSheetUrl = localStorage.getItem(DB_KEYS.SHEET_URL);
+        if (savedSheetUrl && savedSheetUrl !== PREVIOUS_SHEET_SYNC_URL) {
+          state.sheetSyncUrl = savedSheetUrl;
+        }
+        const savedSheetSecret = localStorage.getItem(DB_KEYS.SHEET_SECRET);
+        if (savedSheetSecret) state.sheetSyncSecret = savedSheetSecret;
+      } catch {
+        // Fallback to defaults
+      }
+
+      const cloudInp = document.getElementById("cloudSyncUrlInput");
+      if (cloudInp) cloudInp.value = state.cloudSyncUrl || "";
+      const sheetInp = document.getElementById("sheetSyncUrlInput");
+      if (sheetInp) sheetInp.value = state.sheetSyncUrl || "";
+      const secretInp = document.getElementById("sheetSyncSecretInput");
+      if (secretInp) secretInp.value = state.sheetSyncSecret || DEFAULT_SHEET_SECRET;
+    }
+
+    function saveLocalOnly() {
+      localStorage.setItem(DB_KEYS.QUOTES, JSON.stringify(state.savedQuotes));
+      localStorage.setItem(DB_KEYS.PREBUILTS, JSON.stringify(state.prebuiltSets));
+      localStorage.setItem(DB_KEYS.MASTER, JSON.stringify(state.masterItems));
+      localStorage.setItem(DB_KEYS.ENQUIRIES, JSON.stringify(state.enquiries));
+      localStorage.setItem(DB_KEYS.SERVICE, JSON.stringify(state.serviceTickets));
+      localStorage.setItem(DB_KEYS.BUILDS, JSON.stringify(state.buildOrders));
+      localStorage.setItem(DB_KEYS.DELETED, JSON.stringify(state.deletedIds));
     }
 
     function persistDatabaseToStorage() {
@@ -2485,212 +2639,212 @@
       }
     }
 
-    function recordDeletedId(id) {
-      if (!id) return;
-      if (!state.deletedIds.includes(id)) {
-        state.deletedIds.push(id);
-      }
-    }
-
-    function mergeCollectionByKey(localArr, remoteArr, deletedSet, keyField = "id") {
+    function mergeByIdAndTimestamp(localArr, remoteArr, delSet) {
       const map = new Map();
-      const upsert = (item) => {
-        if (!item || !item[keyField]) return;
-        const k = String(item[keyField]);
-        if (deletedSet.has(k) || (item.id && deletedSet.has(String(item.id)))) return;
-        const existing = map.get(k);
-        if (!existing) {
-          map.set(k, item);
-        } else {
-          const existingTs = Number(existing.updatedAt || 0);
-          const incomingTs = Number(item.updatedAt || 0);
-          if (incomingTs >= existingTs) {
-            map.set(k, item);
-          }
+      (localArr || []).forEach(item => {
+        if (item && item.id && !delSet.has(String(item.id))) {
+          map.set(String(item.id), item);
         }
-      };
-      (remoteArr || []).forEach(upsert);
-      (localArr || []).forEach(upsert);
+      });
+      (remoteArr || []).forEach(item => {
+        if (!item || !item.id || delSet.has(String(item.id))) return;
+        const existing = map.get(String(item.id));
+        if (!existing || Number(item.updatedAt || 0) > Number(existing.updatedAt || 0)) {
+          map.set(String(item.id), item);
+        }
+      });
       return Array.from(map.values()).sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0));
     }
 
-    function updateSyncUiIndicators(status) {
-      const dot = document.getElementById("syncStatusDot");
-      const syncNowBtn = document.getElementById("syncNowBtn");
-      const stopSyncBtn = document.getElementById("stopSyncHeaderBtn");
-      const stopModalBtn = document.getElementById("stopSyncModalBtn");
-      const statusText = document.getElementById("cloudStatusText");
-      const metaText = document.getElementById("lastSyncedMeta");
-      const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    function mergeMasterCollections(localArr, remoteArr, delSet) {
+      const map = new Map();
+      const all = [...(localArr || []), ...(remoteArr || [])];
+      all.forEach(item => {
+        if (!item || !item.id || delSet.has(String(item.id))) return;
+        const fp = buildTokenFingerprint(item.name);
+        if (item.normKey && delSet.has(String(item.normKey))) return;
+        const compositeKey = `${item.category || "Other"}::${fp}`;
+        const existing = map.get(compositeKey);
+        if (!existing || Number(item.updatedAt || 0) >= Number(existing.updatedAt || 0)) {
+          map.set(compositeKey, { ...item, normKey: fp });
+        }
+      });
+      return Array.from(map.values());
+    }
 
-      if (!state.cloudSyncUrl || status === "local") {
-        if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400";
-        if (syncNowBtn) syncNowBtn.classList.add("hidden");
-        if (stopSyncBtn) stopSyncBtn.classList.add("hidden");
-        if (stopModalBtn) stopModalBtn.classList.add("hidden");
-        if (statusText) statusText.textContent = "Offline (LocalStorage Only)";
-        if (metaText) metaText.textContent = "Auto-Sync: Paused (Click Connect & Sync to resume)";
-        return;
+    function applyRemoteSnapshot(remoteData) {
+      if (!remoteData || typeof remoteData !== "object") return false;
+      const delSet = new Set([
+        ...(state.deletedIds || []).map(String),
+        ...((remoteData.deletedIds || []).map(String))
+      ]);
+      state.deletedIds = Array.from(delSet).slice(-500);
+
+      let changed = false;
+      if (Array.isArray(remoteData.enquiries)) {
+        state.enquiries = mergeByIdAndTimestamp(state.enquiries, remoteData.enquiries, delSet);
+        changed = true;
+      }
+      if (Array.isArray(remoteData.serviceTickets)) {
+        state.serviceTickets = mergeByIdAndTimestamp(state.serviceTickets, remoteData.serviceTickets, delSet);
+        changed = true;
+      }
+      if (Array.isArray(remoteData.buildOrders)) {
+        state.buildOrders = mergeByIdAndTimestamp(state.buildOrders, remoteData.buildOrders, delSet);
+        changed = true;
+      }
+      if (Array.isArray(remoteData.savedQuotes)) {
+        state.savedQuotes = mergeByIdAndTimestamp(state.savedQuotes, remoteData.savedQuotes, delSet);
+        changed = true;
+      }
+      if (Array.isArray(remoteData.prebuiltSets)) {
+        state.prebuiltSets = mergeByIdAndTimestamp(state.prebuiltSets, remoteData.prebuiltSets, delSet);
+        changed = true;
+      }
+      if (Array.isArray(remoteData.masterItems)) {
+        state.masterItems = mergeMasterCollections(state.masterItems, remoteData.masterItems, delSet);
+        changed = true;
       }
 
-      if (syncNowBtn) syncNowBtn.classList.remove("hidden");
-      if (stopSyncBtn && isAdminUser()) stopSyncBtn.classList.remove("hidden");
-      if (stopModalBtn && isAdminUser()) stopModalBtn.classList.remove("hidden");
+      if (changed) {
+        saveLocalOnly();
+        refreshAllViews();
+      }
+      return changed;
+    }
 
-      if (status === "syncing") {
-        if (dot) dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
-        if (statusText) statusText.textContent = "Syncing...";
-      } else if (status === "synced") {
-        if (dot) dot.className = "w-2 h-2 rounded-full bg-cyan-400";
-        if (statusText) statusText.textContent = "Live 15s Team Sync ✓";
-        if (metaText) metaText.textContent = `Last synced with team at ${timeStr}`;
-      } else if (status === "error") {
-        if (dot) dot.className = "w-2 h-2 rounded-full bg-red-400";
-        if (statusText) statusText.textContent = "Offline / Retry Pending";
+    function setCloudSyncIndicator(statusMode, metaMsg = "") {
+      const dot = document.getElementById("syncStatusDot");
+      const statusText = document.getElementById("cloudStatusText");
+      const metaEl = document.getElementById("lastSyncedMeta");
+      const syncNowBtn = document.getElementById("syncNowBtn");
+      const stopBtn = document.getElementById("stopSyncHeaderBtn");
+
+      if (dot) {
+        dot.className = statusMode === "connected"
+          ? "w-2 h-2 rounded-full bg-cyan-400"
+          : (statusMode === "syncing"
+            ? "w-2 h-2 rounded-full bg-amber-400 animate-ping"
+            : (statusMode === "error" ? "w-2 h-2 rounded-full bg-red-400" : "w-2 h-2 rounded-full bg-emerald-400"));
+      }
+      if (statusText) {
+        statusText.textContent = statusMode === "connected"
+          ? "Live Team Sync Active ✓"
+          : (statusMode === "syncing" ? "Syncing..." : (statusMode === "error" ? "Offline / Retry" : "LocalStorage Active"));
+      }
+      if (metaEl && metaMsg) metaEl.textContent = metaMsg;
+      if (syncNowBtn) {
+        if (state.cloudSyncUrl) syncNowBtn.classList.remove("hidden");
+        else syncNowBtn.classList.add("hidden");
+      }
+      if (stopBtn && isAdminUser()) {
+        if (state.cloudSyncUrl) stopBtn.classList.remove("hidden");
+        else stopBtn.classList.add("hidden");
       }
     }
 
-    async function pullAndMergeFromCloud(silent = false) {
+    async function manualPullFromCloud(silent = false) {
       if (!state.cloudSyncUrl || state.isSyncing) return;
       state.isSyncing = true;
-      updateSyncUiIndicators("syncing");
+      setCloudSyncIndicator("syncing");
       try {
-        const res = await fetch(state.cloudSyncUrl, { cache: "no-store" });
-        if (!res.ok) throw new Error("Cloud fetch failed");
-        const remote = await res.json();
-        if (remote && typeof remote === "object") {
-          const prevCount = state.enquiries.length + state.serviceTickets.length + state.buildOrders.length + state.savedQuotes.length + state.masterItems.length;
-          const mergedDeleted = Array.from(new Set([...(state.deletedIds || []), ...(remote.deletedIds || [])]));
-          const delSet = new Set(mergedDeleted.map(String));
-
-          state.deletedIds = mergedDeleted.slice(-300);
-          state.enquiries = mergeCollectionByKey(state.enquiries, remote.enquiries, delSet, "id");
-          state.serviceTickets = mergeCollectionByKey(state.serviceTickets, remote.serviceTickets, delSet, "id");
-          state.buildOrders = mergeCollectionByKey(state.buildOrders, remote.buildOrders, delSet, "id");
-          state.savedQuotes = mergeCollectionByKey(state.savedQuotes, remote.savedQuotes, delSet, "id");
-          state.prebuiltSets = mergeCollectionByKey(state.prebuiltSets, remote.prebuiltSets, delSet, "id");
-          state.masterItems = mergeCollectionByKey(state.masterItems, remote.masterItems, delSet, "normKey");
-
-          saveLocalOnly();
-          refreshAllViews();
-
-          const newCount = state.enquiries.length + state.serviceTickets.length + state.buildOrders.length + state.savedQuotes.length + state.masterItems.length;
-          if (!silent) {
-            showToast("🔄 Synced latest team data from Cloud!", "emerald");
-          } else if (newCount > prevCount) {
-            showToast("🔄 Team Sync: New updates received!", "emerald");
-          }
+        const res = await fetch(state.cloudSyncUrl);
+        if (res.ok) {
+          const data = await res.json();
+          if (data) applyRemoteSnapshot(data);
+          setCloudSyncIndicator("connected", `Last Synced: ${new Date().toLocaleTimeString()}`);
+          if (!silent) showToast("🔄 Synced latest team updates!", "emerald");
+        } else {
+          setCloudSyncIndicator("error");
         }
-        updateSyncUiIndicators("synced");
       } catch {
-        updateSyncUiIndicators("error");
-        if (!silent) showToast("Could not reach Cloud Sync URL.", "amber");
+        setCloudSyncIndicator("error");
       } finally {
         state.isSyncing = false;
       }
     }
 
     async function pushMergedToCloud() {
-      if (!state.cloudSyncUrl) return;
-      updateSyncUiIndicators("syncing");
+      if (!state.cloudSyncUrl || state.isSyncing) return;
+      state.isSyncing = true;
+      setCloudSyncIndicator("syncing");
       try {
-        const res = await fetch(state.cloudSyncUrl, { cache: "no-store" });
-        if (res.ok) {
-          const remote = await res.json();
-          if (remote && typeof remote === "object") {
-            const mergedDeleted = Array.from(new Set([...(state.deletedIds || []), ...(remote.deletedIds || [])]));
-            const delSet = new Set(mergedDeleted.map(String));
-            state.deletedIds = mergedDeleted.slice(-300);
-            state.enquiries = mergeCollectionByKey(state.enquiries, remote.enquiries, delSet, "id");
-            state.serviceTickets = mergeCollectionByKey(state.serviceTickets, remote.serviceTickets, delSet, "id");
-            state.buildOrders = mergeCollectionByKey(state.buildOrders, remote.buildOrders, delSet, "id");
-            state.savedQuotes = mergeCollectionByKey(state.savedQuotes, remote.savedQuotes, delSet, "id");
-            state.prebuiltSets = mergeCollectionByKey(state.prebuiltSets, remote.prebuiltSets, delSet, "id");
-            state.masterItems = mergeCollectionByKey(state.masterItems, remote.masterItems, delSet, "normKey");
-            saveLocalOnly();
-          }
+        const getRes = await fetch(state.cloudSyncUrl);
+        if (getRes.ok) {
+          const remote = await getRes.json();
+          if (remote) applyRemoteSnapshot(remote);
         }
+        await pushDirectSnapshotToCloud();
+      } catch {
+        setCloudSyncIndicator("error");
+      } finally {
+        state.isSyncing = false;
+      }
+    }
 
+    async function pushDirectSnapshotToCloud() {
+      if (!state.cloudSyncUrl) return;
+      try {
         const payload = {
           updatedAt: Date.now(),
+          deletedIds: state.deletedIds,
           enquiries: state.enquiries,
           serviceTickets: state.serviceTickets,
           buildOrders: state.buildOrders,
           savedQuotes: state.savedQuotes,
           prebuiltSets: state.prebuiltSets,
-          masterItems: state.masterItems,
-          deletedIds: state.deletedIds
+          masterItems: state.masterItems
         };
-
         const putRes = await fetch(state.cloudSyncUrl, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-        if (!putRes.ok) throw new Error("Cloud PUT failed");
-        updateSyncUiIndicators("synced");
+        if (putRes.ok) {
+          setCloudSyncIndicator("connected", `Last Synced: ${new Date().toLocaleTimeString()}`);
+        } else {
+          setCloudSyncIndicator("error");
+        }
       } catch {
-        updateSyncUiIndicators("error");
+        setCloudSyncIndicator("error");
       }
     }
 
-    function startLiveCloudPolling() {
+    function startCloudAutoPoll() {
       if (state.cloudPollTimer) clearInterval(state.cloudPollTimer);
-      if (!state.cloudSyncUrl) return;
+      if (!state.cloudSyncUrl) {
+        setCloudSyncIndicator("offline");
+        return;
+      }
+      setCloudSyncIndicator("connected");
+      manualPullFromCloud(true);
       state.cloudPollTimer = setInterval(() => {
         if (!document.hidden && state.cloudSyncUrl) {
-          pullAndMergeFromCloud(true);
+          manualPullFromCloud(true);
         }
       }, 15000);
     }
 
-    function stopCloudSync() {
-      if (!isAdminUser()) {
-        showToast("Only Admin (Ashwin) can stop cloud sync.", "amber");
-        return;
-      }
-      if (state.cloudPollTimer) {
-        clearInterval(state.cloudPollTimer);
-        state.cloudPollTimer = null;
-      }
-      state.cloudSyncUrl = "";
-      localStorage.setItem(DB_KEYS.CLOUD_URL, "");
-      updateSyncUiIndicators("local");
-      showToast("Cloud sync stopped. Working offline on this PC.", "amber");
-    }
-
     function saveCloudSyncConfig() {
-      if (!isAdminUser()) {
-        showToast("Only Admin (Ashwin) can change sync settings.", "amber");
-        return;
-      }
+      if (!isAdminUser()) return;
       const url = document.getElementById("cloudSyncUrlInput").value.trim();
       state.cloudSyncUrl = url;
       localStorage.setItem(DB_KEYS.CLOUD_URL, url);
-      if (!url) {
-        stopCloudSync();
-        return;
-      }
-      startLiveCloudPolling();
-      pushMergedToCloud();
-      showToast("Connected to Team Cloud Sync (15s live auto-sync)!", "emerald");
+      startCloudAutoPoll();
+      showToast(url ? "Connected to Firebase Team Sync!" : "Cloud Sync URL cleared.", "emerald");
     }
 
-    function manualPullFromCloud() {
-      const icon = document.getElementById("syncNowIcon");
-      if (icon) icon.classList.add("animate-spin");
-      pullAndMergeFromCloud(false).finally(() => {
-        setTimeout(() => {
-          if (icon) icon.classList.remove("animate-spin");
-        }, 450);
-      });
+    function stopCloudSync() {
+      if (!isAdminUser()) return;
+      state.cloudSyncUrl = "";
+      localStorage.setItem(DB_KEYS.CLOUD_URL, "");
+      if (state.cloudPollTimer) clearInterval(state.cloudPollTimer);
+      setCloudSyncIndicator("offline", "Auto-Sync: Stopped");
+      showToast("Cloud syncing stopped. Working locally.", "amber");
     }
 
     function clearDemoData() {
-      if (!isAdminUser()) {
-        showToast("Only Admin (Ashwin) can clear data.", "amber");
-        return;
-      }
+      if (!isAdminUser()) return;
       state.enquiries = [];
       state.serviceTickets = [];
       state.buildOrders = [];
@@ -2700,95 +2854,27 @@
       saveLocalOnly();
       refreshAllViews();
       closeModal("backupModal");
-      showToast("Local workspace data cleared.", "amber");
-    }
-
-    // =========================================================================
-    // 8. INITIALIZATION & WORKSPACE TABS
-    // =========================================================================
-    function initApp() {
-      loadDatabaseFromStorage();
-
-      const masterCatFilter = document.getElementById("masterCategoryFilter");
-      const pickerCatFilter = document.getElementById("pickerCatFilter");
-      const singleMasterCat = document.getElementById("singleMasterCat");
-      const singleMasterWarranty = document.getElementById("singleMasterWarranty");
-
-      if (masterCatFilter) {
-        masterCatFilter.innerHTML = `<option value="ALL">All Categories</option>` +
-          CATEGORIES.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-      }
-      if (pickerCatFilter) {
-        pickerCatFilter.innerHTML = `<option value="ALL">All Categories</option>` +
-          CATEGORIES.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-      }
-      if (singleMasterCat) {
-        singleMasterCat.innerHTML = CATEGORIES.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-      }
-      if (singleMasterWarranty) {
-        singleMasterWarranty.innerHTML = WARRANTIES.map(w => `<option value="${escapeHtml(w)}">${escapeHtml(w)}</option>`).join("");
-      }
-
-      const cloudUrlInput = document.getElementById("cloudSyncUrlInput");
-      const sheetUrlInput = document.getElementById("sheetSyncUrlInput");
-      const sheetSecretInput = document.getElementById("sheetSyncSecretInput");
-      if (cloudUrlInput) cloudUrlInput.value = state.cloudSyncUrl || "";
-      if (sheetUrlInput) sheetUrlInput.value = state.sheetSyncUrl || "";
-      if (sheetSecretInput) sheetSecretInput.value = state.sheetSyncSecret || DEFAULT_SHEET_SECRET;
-
-      const todayIso = getTodayIsoLocal();
-      const quoteDateEl = document.getElementById("quoteDateInput");
-      if (quoteDateEl) quoteDateEl.value = todayIso;
-
-      const bubbleClock = document.getElementById("bubbleTimestamp");
-      if (bubbleClock) {
-        bubbleClock.textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-      }
-
-      restoreTeamSession();
-      applySessionUiAndPermissions();
-
-      resetEnquiryForm();
-      resetServiceForm();
-      loadSampleBuild(true);
-      updateSyncUiIndicators(state.cloudSyncUrl ? "synced" : "local");
-      updateSheetSyncBadges();
-      refreshAllViews();
-
-      if (state.cloudSyncUrl) {
-        startLiveCloudPolling();
-        pullAndMergeFromCloud(true).then(() => {
-          if (state.sheetSyncUrl) {
-            pullOpenEnquiriesFromSheet(true);
-          }
-        });
-      } else if (state.sheetSyncUrl) {
-        pullOpenEnquiriesFromSheet(true);
-      }
-    }
-
-    function updateGlobalBadges() {
-      const enqBadge = document.getElementById("navEnquiriesCount");
-      const qtBadge = document.getElementById("navQuotesCount");
-      const pbBadge = document.getElementById("navBuildSetsCount");
-      const mstBadge = document.getElementById("navMasterCount");
-      const srvBadge = document.getElementById("navServiceCount");
-      const bldBadge = document.getElementById("navBuildsCount");
-
-      const activeLeadsCount = state.enquiries.filter(e => e.status !== "Closed" && e.status !== "Won / Billed").length;
-      const activeSrvCount = state.serviceTickets.filter(s => s.status !== "Delivered / Closed").length;
-      const activeBldCount = state.buildOrders.filter(b => b.stage !== "Delivered").length;
-
-      if (enqBadge) enqBadge.textContent = activeLeadsCount;
-      if (qtBadge) qtBadge.textContent = state.savedQuotes.length;
-      if (pbBadge) pbBadge.textContent = state.prebuiltSets.length;
-      if (mstBadge) mstBadge.textContent = state.masterItems.length;
-      if (srvBadge) srvBadge.textContent = activeSrvCount;
-      if (bldBadge) bldBadge.textContent = activeBldCount;
+      showToast("Local workspace cleared.", "amber");
     }
 
     function refreshAllViews() {
-      updateGlobalBadges();
+      const openEnqCount = state.enquiries.filter(e => e.status !== "Closed" && e.status !== "Won / Billed").length;
+      const openSrvCount = state.serviceTickets.filter(t => t.status !== "Delivered / Closed").length;
+      const activeBldCount = state.buildOrders.filter(b => b.stage !== "Delivered").length;
+
+      const enqBadge = document.getElementById("navEnquiriesCount");
+      if (enqBadge) enqBadge.textContent = openEnqCount;
+      const qtBadge = document.getElementById("navQuotesCount");
+      if (qtBadge) qtBadge.textContent = state.savedQuotes.length;
+      const pbBadge = document.getElementById("navBuildSetsCount");
+      if (pbBadge) pbBadge.textContent = state.prebuiltSets.length;
+      const mstBadge = document.getElementById("navMasterCount");
+      if (mstBadge) mstBadge.textContent = state.masterItems.length;
+      const srvBadge = document.getElementById("navServiceCount");
+      if (srvBadge) srvBadge.textContent = openSrvCount;
+      const bldBadge = document.getElementById("navBuildsCount");
+      if (bldBadge) bldBadge.textContent = activeBldCount;
+
       renderEnquiriesList();
       renderQuotationsWorkspace();
       renderPrebuiltSets();
@@ -2798,46 +2884,145 @@
       updateSheetSyncBadges();
     }
 
-    function switchWorkspaceTab(tabName) {
-      const panels = ["enquiries", "generator", "quotations", "prebuilts", "master", "service", "builds"];
-      panels.forEach(p => {
-        const panelEl = document.getElementById(`workspace_${p}`);
-        const btnEl = document.getElementById(`tabBtn_${p}`);
-        if (!panelEl || !btnEl) return;
+    function loadPrebuiltIntoGenerator(setId) {
+      const set = state.prebuiltSets.find(s => s.id === setId);
+      if (!set) return;
 
-        if (p === tabName) {
-          panelEl.classList.remove("hidden");
-          panelEl.classList.add(p === "generator" ? "grid" : "flex");
-          btnEl.className = "workspace-tab-btn inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer bg-emerald-600 text-white shadow shrink-0";
-        } else {
-          panelEl.classList.add("hidden");
-          panelEl.classList.remove("grid", "flex");
-          btnEl.className = "workspace-tab-btn inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer text-slate-300 hover:text-white shrink-0";
-        }
-      });
+      const todayIso = getTodayIsoLocal();
+      state.editingQuoteBaseCode = null;
+      document.getElementById("quoteDateInput").value = todayIso;
+      document.getElementById("refCodeInput").value = generateNextRefCode(todayIso);
+      document.getElementById("buildTitleInput").value = String(set.title || "Custom PC Build").replace(/^Build\s*#?\d+\s*[—\-:]\s*/i, "").trim();
+      document.getElementById("useCaseSelect").value = set.useCase || "gaming";
+      state.components = JSON.parse(JSON.stringify(set.coreComponents || [])).map(c => ({ ...c, id: uid() }));
 
-      if (tabName === "enquiries") renderEnquiriesList();
-      if (tabName === "quotations") renderQuotationsWorkspace();
-      if (tabName === "prebuilts") renderPrebuiltSets();
-      if (tabName === "master") renderMasterSheet();
-      if (tabName === "service") {
-        resetServiceForm();
-        renderServiceTickets();
+      const preset = USE_CASE_PRESETS[set.useCase || "gaming"];
+      if (preset) {
+        state.highlights = JSON.parse(JSON.stringify(preset.highlights)).map(h => ({ id: uid(), ...h }));
       }
-      if (tabName === "builds") renderBuildOrders();
-      if (tabName === "generator") renderPreview();
+
+      updateQuoteModeBadge();
+      renderHighlightsList();
+      renderComponentRows();
+      setGlobalMargin(set.marginUsed ?? 26, "pill");
+      switchWorkspaceTab("generator");
+      showToast(`Loaded "${set.buildName || set.title}" into Quote Generator!`, "emerald");
+    }
+
+    function deletePrebuiltSet(setId) {
+      if (!isAdminUser()) {
+        showToast("Only Admin (Ashwin) can delete Pre-Built PC sets.", "amber");
+        return;
+      }
+      recordDeletedId(setId);
+      state.prebuiltSets = state.prebuiltSets.filter(s => s.id !== setId);
+      persistDatabaseToStorage();
+      refreshAllViews();
+      showToast("Pre-Built PC set removed.", "amber");
+    }
+
+    function exportPrebuiltsCSV() {
+      if (!isAdminUser()) {
+        showToast("Only Admin (Ashwin) can export CSV sheets.", "amber");
+        return;
+      }
+      const headers = [
+        "Build #", "Build Name", "Ref Code", "Date", "Use Case",
+        "Core Base Cost", "24% Floor Price", "28% Target Price", "Quote Price", "Core Components"
+      ];
+      const rows = state.prebuiltSets.map(s => [
+        s.buildNumber || "",
+        s.buildName || s.title || "",
+        s.refCode || "",
+        s.quoteDate || "",
+        s.useCaseLabel || s.useCase || "",
+        s.coreBaseCost || 0,
+        s.coreFloor24Price || 0,
+        s.coreTarget28Price || 0,
+        s.coreQuotePrice || 0,
+        (s.coreComponents || []).map(c => `${c.category}: ${c.name}`).join(" | ")
+      ]);
+      downloadCSVFile(`Media_Faktory_PreBuilt_PCs_${getTodayIsoLocal()}.csv`, headers, rows);
+    }
+
+    function initApp() {
+      populateCategorySelects();
+      loadDatabaseFromStorage();
+
+      const todayIso = getTodayIsoLocal();
+      document.getElementById("quoteDateInput").value = todayIso;
+      document.getElementById("bubbleTimestamp").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+      resetEnquiryForm();
+      resetServiceForm();
+      loadSampleBuild(true);
+
+      if (restoreTeamSession()) {
+        applySessionUiAndPermissions();
+      } else {
+        refreshAllViews();
+      }
+
+      startCloudAutoPoll();
+      if (state.sheetSyncUrl) {
+        pullOpenEnquiriesFromSheet(true);
+      }
     }
 
     // =========================================================================
     // 9. TAB 3: SAVED QUOTATIONS & CUSTOMER REVISIONS WORKSPACE
     // =========================================================================
+    function findLinkedEnquiryForQuote(q) {
+      if (!q) return null;
+      const pKey = normalizePhoneKey(q.customerPhone);
+      if (pKey && pKey.length >= 10) {
+        const byPhone = state.enquiries.find(e => normalizePhoneKey(e.phone) === pKey);
+        if (byPhone) return byPhone;
+      }
+      const cName = String(q.customerName || "").trim().toLowerCase();
+      if (cName && cName.length >= 3) {
+        return state.enquiries.find(e => String(e.customer || "").trim().toLowerCase() === cName) || null;
+      }
+      return null;
+    }
+
+    function bumpQuoteEnquiryFollowUp(enqId, daysOffset) {
+      const e = state.enquiries.find(x => x.id === enqId);
+      if (!e) return;
+      e.nextFollowUp = addDaysIso(daysOffset);
+      e.updatedAt = Date.now();
+      e.sheetSynced = false;
+      persistDatabaseToStorage();
+      refreshAllViews();
+      syncEnquiryToGoogleSheet(e);
+      showToast(`Follow-up updated to ${formatSheetDate(e.nextFollowUp)}`, "emerald");
+    }
+
     function renderQuotationsWorkspace() {
       const container = document.getElementById("quotationsWorkspaceList");
       if (!container) return;
 
+      const todayIso = getTodayIsoLocal();
       const query = (document.getElementById("qtSearchInput")?.value || "").toLowerCase().trim();
+      const staffFilterEl = document.getElementById("qtStaffFilter");
       const branchFilter = document.getElementById("qtBranchFilter")?.value || "ALL";
       const sortBy = document.getElementById("qtSortSelect")?.value || "newest";
+
+      const staffSet = new Set(["Ashwin", "Shaheer Ali", "Athulya", "Adith", "Rinoj", "Rijil"]);
+      state.savedQuotes.forEach(q => {
+        if (q.createdBy && q.createdBy !== "Team") staffSet.add(q.createdBy);
+      });
+
+      const currentStaffVal = staffFilterEl ? (staffFilterEl.value || "ALL") : "ALL";
+      const myName = currentUser ? currentUser.displayName : (localStorage.getItem(DB_KEYS.OWNER_PREF) || "");
+      if (staffFilterEl) {
+        staffFilterEl.innerHTML = `<option value="ALL" ${currentStaffVal === "ALL" ? "selected" : ""}>All Staff Members</option>` +
+          (myName ? `<option value="${escapeHtml(myName)}" ${currentStaffVal === myName ? "selected" : ""}>My Quotes (${escapeHtml(myName)})</option>` : "") +
+          Array.from(staffSet).filter(s => s !== myName).sort().map(s =>
+            `<option value="${escapeHtml(s)}" ${currentStaffVal === s ? "selected" : ""}>${escapeHtml(s)}</option>`
+          ).join("");
+      }
+      const selectedStaff = staffFilterEl ? staffFilterEl.value : "ALL";
 
       const groupsMap = new Map();
       state.savedQuotes.forEach(q => {
@@ -2854,16 +3039,16 @@
           if (revDiff !== 0) return revDiff;
           return Number(b.updatedAt || 0) - Number(a.updatedAt || 0);
         });
-        return {
-          baseCode,
-          latest: versions[0],
-          versions
-        };
+        return { baseCode, latest: versions[0], versions };
       });
 
       groups = groups.filter(g => {
         const q = g.latest;
         if (branchFilter !== "ALL" && q.branch !== branchFilter) return false;
+        if (selectedStaff !== "ALL") {
+          const matchesStaff = g.versions.some(v => String(v.createdBy || "").toLowerCase() === selectedStaff.toLowerCase());
+          if (!matchesStaff) return false;
+        }
         if (query) {
           const allText = g.versions.map(v => {
             const partsStr = (v.components || []).map(c => c.name).join(" ");
@@ -2893,6 +3078,38 @@
       container.innerHTML = groups.map(g => {
         const latest = g.latest;
         const revCount = g.versions.length;
+        const linkedEnq = findLinkedEnquiryForQuote(latest);
+
+        let followUpBadgeHtml = "";
+        let quickFollowUpActionsHtml = "";
+        if (linkedEnq) {
+          const isClosed = linkedEnq.status === "Closed" || linkedEnq.status === "Won / Billed";
+          const isOverdue = !isClosed && linkedEnq.nextFollowUp && linkedEnq.nextFollowUp < todayIso;
+          const isDueToday = !isClosed && linkedEnq.nextFollowUp && linkedEnq.nextFollowUp === todayIso;
+
+          if (linkedEnq.status === "Won / Billed") {
+            followUpBadgeHtml = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">✅ WON / BILLED</span>`;
+          } else if (linkedEnq.status === "Closed") {
+            followUpBadgeHtml = `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">Closed</span>`;
+          } else if (isOverdue) {
+            followUpBadgeHtml = `<span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-red-500/20 text-red-300 border border-red-500/45 animate-pulse">🔴 OVERDUE: ${escapeHtml(formatSheetDate(linkedEnq.nextFollowUp))}</span>`;
+          } else if (isDueToday) {
+            followUpBadgeHtml = `<span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/45">🟡 DUE TODAY: ${escapeHtml(formatSheetDate(linkedEnq.nextFollowUp))}</span>`;
+          } else if (linkedEnq.nextFollowUp) {
+            followUpBadgeHtml = `<span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-cyan-950/60 text-cyan-200 border border-cyan-500/35">📅 Follow-Up: ${escapeHtml(formatSheetDate(linkedEnq.nextFollowUp))}</span>`;
+          }
+
+          if (!isClosed) {
+            quickFollowUpActionsHtml = `
+              <button type="button" onclick="bumpQuoteEnquiryFollowUp('${linkedEnq.id}', 1)" class="px-2 py-1 rounded-lg text-[10px] font-semibold bg-[#0f172a] hover:bg-slate-800 text-amber-300 border border-[#334155] cursor-pointer" title="Reschedule follow-up to tomorrow">
+                📅 +1d
+              </button>
+              <button type="button" onclick="quickUpdateEnquiryStatus('${linkedEnq.id}', 'Won / Billed')" class="px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/40 cursor-pointer" title="Mark Enquiry Won / Billed">
+                ✅ Won
+              </button>
+            `;
+          }
+        }
 
         const versionsHtml = g.versions.map((v, idx) => {
           const revNum = extractRevisionNumber(v.refCode);
@@ -2945,12 +3162,17 @@
               <div class="flex flex-wrap items-center gap-2">
                 <span class="text-sm sm:text-base font-extrabold text-white">${escapeHtml(latest.customerName || "Walk-In / Unnamed Customer")}</span>
                 ${latest.customerPhone ? `<span class="text-xs font-mono text-emerald-300 bg-[#0f172a] px-2 py-0.5 rounded-md border border-[#334155]">${escapeHtml(latest.customerPhone)}</span>` : ""}
-                <span class="text-[11px] text-slate-400">• ${escapeHtml(latest.branch || "Calicut")} Branch</span>
+                ${latest.createdBy ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#0f172a] text-cyan-300 border border-[#334155]">👤 By ${escapeHtml(latest.createdBy)}</span>` : ""}
+                <span class="text-[11px] text-slate-400">• ${escapeHtml(latest.branch || "Calicut")}</span>
                 ${revCount > 1 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/35">${revCount} Versions</span>` : ""}
+                ${followUpBadgeHtml}
               </div>
-              <button type="button" onclick="cloneCustomerAsSeparateNewQuote('${latest.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#0f172a] hover:bg-slate-800 text-cyan-300 border border-[#334155] cursor-pointer" title="Create a separate new base quote number for this customer">
-                + New Separate Quote for Customer
-              </button>
+              <div class="flex flex-wrap items-center gap-1.5">
+                ${quickFollowUpActionsHtml}
+                <button type="button" onclick="cloneCustomerAsSeparateNewQuote('${latest.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#0f172a] hover:bg-slate-800 text-cyan-300 border border-[#334155] cursor-pointer" title="Create a separate new base quote number for this customer">
+                  + New Separate Quote
+                </button>
+              </div>
             </div>
             <div class="space-y-2">
               ${versionsHtml}
@@ -2995,7 +3217,7 @@
       updateQuoteModeBadge();
       renderHighlightsList();
       renderComponentRows();
-      setGlobalMargin(item.globalMargin ?? 24, "pill");
+      setGlobalMargin(item.globalMargin ?? 26, "pill");
       switchWorkspaceTab("generator");
       showToast(`Loaded ${item.refCode} as ${nextRevCode} for editing!`, "emerald");
     }
@@ -3023,7 +3245,7 @@
       if (!item) return;
       const formattedDate = formatReadableDate(item.quoteDate);
       const showPrices = item.showItemPrices !== false;
-      const margin = item.globalMargin ?? 24;
+      const margin = item.globalMargin ?? 26;
 
       let lines = [];
       lines.push(`*Media Faktory* - *${item.docType || "Custom PC Build Quotation"}*`);
@@ -4014,7 +4236,7 @@
       updateQuoteModeBadge();
       renderHighlightsList();
       renderComponentRows();
-      setGlobalMargin(24, "pill");
+      setGlobalMargin(26, "pill");
       if (!silent) showToast("Sample Gaming Build loaded!", "emerald");
     }
 
@@ -4234,7 +4456,6 @@
       showToast(`Parsed & ALL-CAPS standardized ${parsedRows.length} component(s)!`, "emerald");
     }
 
-    // Inline Master Price Sheet Autocomplete Dropdown per Component Row (Includes Fuzzy Typo Matches)
     function openRowMasterAutocomplete(rowId, queryText = "") {
       closeAllRowAutocompletes();
       const dropdown = document.getElementById(`row_ac_${rowId}`);
@@ -4250,10 +4471,11 @@
           const directHit = !q
             ? (rowCat === "Other" || item.category === rowCat)
             : (item.name.toLowerCase().includes(q) || item.category.toLowerCase().includes(q));
-          const simScore = qFp ? computeFingerprintSimilarity(qFp, buildTokenFingerprint(item.name)) : 0;
+          const specsMatch = q ? haveCompatibleCriticalSpecs(q, item.name) : true;
+          const simScore = (qFp && specsMatch) ? computeFingerprintSimilarity(qFp, buildTokenFingerprint(item.name)) : 0;
           return { item, directHit, simScore };
         })
-        .filter(x => x.directHit || x.simScore >= 0.72)
+        .filter(x => x.directHit || x.simScore >= 0.78)
         .sort((a, b) => {
           const aSameCat = a.item.category === rowCat ? 0 : 1;
           const bSameCat = b.item.category === rowCat ? 0 : 1;
@@ -4280,7 +4502,7 @@
               <div class="min-w-0">
                 <div class="text-xs font-semibold text-white truncate">
                   ${escapeHtml(m.name)}
-                  ${!directHit && simScore >= 0.72 ? `<span class="ml-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300">Did you mean?</span>` : ""}
+                  ${!directHit && simScore >= 0.78 ? `<span class="ml-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300">Did you mean?</span>` : ""}
                 </div>
                 <div class="text-[10px] text-slate-400">${escapeHtml(m.category)} • ${escapeHtml(m.warranty)}</div>
               </div>
@@ -4514,36 +4736,145 @@
     }
 
     // =========================================================================
-    // 13. MASTER SHEET UPSERT (WITH FUZZY DEDUP) & SMART REVISION SAVE
+    // 14. TAB 4: PRE-BUILT PC SETS & MASTER UPSERT
     // =========================================================================
-    function upsertMasterComponent(comp, sourceLabel = "Quote") {
-      const standardizedName = standardizeAllCapsComponentName(comp.name, comp.category, false);
-      const price = Math.round(parseFloat(comp.basePrice) || 0);
-      if (!standardizedName || price <= 0) return { status: "skipped" };
+    function renderPrebuiltSets() {
+      const container = document.getElementById("prebuiltWeeksContainer");
+      const searchInput = document.getElementById("prebuiltSearchInput");
+      const useCaseFilter = document.getElementById("prebuiltUseCaseFilter");
+      const sortSelect = document.getElementById("prebuiltSortSelect");
+      const countEl = document.getElementById("prebuiltVisibleCount");
+      if (!container) return;
 
+      const query = (searchInput?.value || "").toLowerCase().trim();
+      const selectedUseCase = useCaseFilter?.value || "ALL";
+      const sortOrder = sortSelect?.value || "price_asc";
+
+      const filtered = state.prebuiltSets.filter(s => {
+        if (selectedUseCase !== "ALL" && s.useCase !== selectedUseCase) return false;
+        if (query) {
+          const partsText = (s.coreComponents || []).map(c => c.name).join(" ");
+          const hay = `${s.buildName || ""} ${s.title || ""} ${s.refCode || ""} Build #${s.buildNumber || ""} ${partsText}`.toLowerCase();
+          if (!hay.includes(query)) return false;
+        }
+        return true;
+      });
+
+      if (countEl) countEl.textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="bg-[#1e293b] border border-dashed border-[#334155] rounded-2xl p-10 text-center">
+            <p class="text-sm font-semibold text-slate-300 mb-1">No Pre-Built PC Sets match your filter.</p>
+            <p class="text-xs text-slate-400">Whenever you click <strong class="text-emerald-400">Copy for WhatsApp</strong> or <strong class="text-cyan-400">PDF Quote</strong>, external peripherals are stripped and the core PC automatically saves here as Build #1, #2, #3...</p>
+          </div>
+        `;
+        return;
+      }
+
+      const sortedItems = filtered.slice().sort((a, b) => {
+        if (sortOrder === "price_desc") return (b.coreQuotePrice || 0) - (a.coreQuotePrice || 0);
+        if (sortOrder === "build_desc") return (b.buildNumber || 0) - (a.buildNumber || 0);
+        return (a.coreQuotePrice || 0) - (b.coreQuotePrice || 0);
+      });
+
+      const cardsHtml = sortedItems.map(s => {
+        const coreList = (s.coreComponents || []).map(c =>
+          `<div class="flex items-center justify-between gap-2 text-[11px] py-1 border-b border-[#334155]/60 last:border-none">
+            <span class="text-slate-400 font-medium shrink-0">${escapeHtml(c.category)}</span>
+            <span class="text-slate-100 truncate text-right">${(c.qty || 1) > 1 ? c.qty + "x " : ""}${escapeHtml(c.name)}</span>
+          </div>`
+        ).join("");
+
+        const strippedBadge = (s.strippedExternalNames && s.strippedExternalNames.length > 0)
+          ? `<div class="mt-2 text-[10px] text-purple-300 bg-purple-950/40 border border-purple-500/30 rounded-lg px-2 py-1">
+              Stripped External: ${escapeHtml(s.strippedExternalNames.join(", "))}
+            </div>`
+          : "";
+
+        const deleteBtnHtml = isAdminUser()
+          ? `<button type="button" onclick="deletePrebuiltSet('${s.id}')" class="p-2 rounded-xl bg-[#0f172a] hover:bg-red-950/60 text-slate-400 hover:text-red-400 border border-[#334155] transition cursor-pointer" title="Delete Set (Admin)">✕</button>`
+          : "";
+
+        return `
+          <div class="bg-[#1e293b] border border-[#334155] hover:border-cyan-500/50 rounded-2xl p-4 flex flex-col justify-between shadow-lg transition">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <div class="flex items-center gap-1.5">
+                  ${s.buildNumber ? `<span class="px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 font-mono text-[11px] font-extrabold border border-cyan-500/40">Build #${s.buildNumber}</span>` : ""}
+                  <span class="px-2 py-0.5 rounded-md bg-[#0f172a] text-amber-300 font-mono text-[10px] font-bold border border-[#334155]">${escapeHtml(s.refCode)}</span>
+                </div>
+                <span class="text-[10px] font-semibold text-slate-300">${escapeHtml(s.useCaseLabel || "")}</span>
+              </div>
+
+              <h4 class="text-sm font-bold text-white mb-2.5">${escapeHtml(s.buildName || s.title)}</h4>
+
+              <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-2.5 mb-3">
+                ${coreList}
+              </div>
+              ${strippedBadge}
+            </div>
+
+            <div class="pt-3 mt-3 border-t border-[#334155]">
+              <div class="grid grid-cols-3 gap-1.5 text-center mb-3">
+                <div class="bg-[#0f172a] rounded-lg p-1.5 border border-[#334155]">
+                  <span class="block text-[9px] text-slate-400 uppercase">Base Cost</span>
+                  <span class="text-[11px] font-mono font-bold text-slate-200">₹${formatINR(s.coreBaseCost)}</span>
+                </div>
+                <div class="bg-[#0f172a] rounded-lg p-1.5 border border-[#334155]">
+                  <span class="block text-[9px] text-slate-400 uppercase">24% Floor</span>
+                  <span class="text-[11px] font-mono font-bold text-amber-300">₹${formatINR(s.coreFloor24Price)}</span>
+                </div>
+                <div class="bg-emerald-950/60 rounded-lg p-1.5 border border-emerald-500/40">
+                  <span class="block text-[9px] text-emerald-300 uppercase">Quote Price</span>
+                  <span class="text-xs font-mono font-extrabold text-emerald-300">₹${formatINR(s.coreQuotePrice)}/-</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="loadPrebuiltIntoGenerator('${s.id}')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white transition cursor-pointer">
+                  Load Core PC into Quote
+                </button>
+                ${deleteBtnHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          ${cardsHtml}
+        </div>
+      `;
+    }
+
+    function upsertMasterComponent(comp, sourceLabel = "Quote") {
+      const price = Math.round(parseFloat(comp.basePrice) || 0);
+      if (!comp || !comp.name || price <= 0) {
+        return { status: "skipped", item: null };
+      }
+
+      const standardizedName = standardizeAllCapsComponentName(comp.name, comp.category, false);
       const normKey = buildTokenFingerprint(standardizedName);
       const todayIso = getTodayIsoLocal();
       const nowTs = Date.now();
 
-      state.deletedIds = state.deletedIds.filter(d => d !== normKey);
-
       const fuzzyHit = findMasterFuzzyMatch(standardizedName, comp.category);
-      const existing = fuzzyHit ? fuzzyHit.item : state.masterItems.find(m => m.normKey === normKey);
+      const existing = fuzzyHit ? fuzzyHit.item : null;
 
       if (existing) {
-        const oldPrice = Math.round(existing.gettingPrice || 0);
-        existing.name = standardizeAllCapsComponentName(existing.name, existing.category || comp.category, true);
-        existing.normKey = buildTokenFingerprint(existing.name);
-        if (oldPrice !== price) {
+        if (Math.round(existing.gettingPrice) !== price) {
+          const oldPrice = Math.round(existing.gettingPrice);
           const deltaPct = oldPrice > 0 ? (((price - oldPrice) / oldPrice) * 100).toFixed(1) : "0.0";
           existing.previousPrice = oldPrice;
           existing.lastDelta = `${price > oldPrice ? "+" : ""}${deltaPct}%`;
           existing.gettingPrice = price;
+          existing.isNetPrice = Boolean(comp.isNetPrice);
+          existing.warranty = comp.warranty || existing.warranty;
+          existing.source = sourceLabel;
           existing.lastUpdated = todayIso;
           existing.updatedAt = nowTs;
-          existing.warranty = comp.warranty || existing.warranty;
-          existing.isNetPrice = Boolean(comp.isNetPrice);
-          existing.isExternal = Boolean(comp.isExternal);
           return { status: "updated", item: existing };
         }
         return { status: "unchanged", item: existing };
@@ -4590,7 +4921,6 @@
         return null;
       }
 
-      // Standardize all current rows to ALL-CAPS before saving
       state.components.forEach(c => {
         c.name = standardizeAllCapsComponentName(c.name, c.category, false);
       });
@@ -4756,238 +5086,157 @@
     }
 
     // =========================================================================
-    // 14. TAB 4: PRE-BUILT PC SETS RENDERING & MANAGEMENT
+    // 15. TAB 5: MASTER COMPONENT PRICE SHEET & MANUAL SELECT-MERGE
     // =========================================================================
-    function renderPrebuiltSets() {
-      const container = document.getElementById("prebuiltWeeksContainer");
-      const weekFilter = document.getElementById("prebuiltWeekFilter");
-      const useCaseFilter = document.getElementById("prebuiltUseCaseFilter");
-      const sortSelect = document.getElementById("prebuiltSortSelect");
-      const countEl = document.getElementById("prebuiltVisibleCount");
-      if (!container || !weekFilter) return;
+    function updateMasterSelectionToolbar() {
+      const validIds = new Set((state.masterItems || []).map(m => m.id));
+      state.selectedMasterIds = (state.selectedMasterIds || []).filter(id => validIds.has(id));
 
-      const currentWeekVal = weekFilter.value || "ALL";
-      const weekMap = new Map();
-      state.prebuiltSets.forEach(s => {
-        if (s.weekKey && !weekMap.has(s.weekKey)) {
-          weekMap.set(s.weekKey, s.weekLabel || s.weekKey);
+      const btn = document.getElementById("manualMergeSelectedBtn");
+      const countSpan = document.getElementById("selectedMasterCountSpan");
+      if (!btn || !countSpan) return;
+
+      countSpan.textContent = state.selectedMasterIds.length;
+      if (isAdminUser() && state.selectedMasterIds.length >= 2) {
+        btn.classList.remove("hidden");
+      } else {
+        btn.classList.add("hidden");
+      }
+    }
+
+    function toggleMasterItemSelection(itemId, isChecked) {
+      const set = new Set(state.selectedMasterIds || []);
+      if (isChecked) set.add(itemId);
+      else set.delete(itemId);
+      state.selectedMasterIds = Array.from(set);
+      updateMasterSelectionToolbar();
+    }
+
+    function toggleSelectAllVisibleMaster(isChecked) {
+      const checkboxes = document.querySelectorAll(".master-row-select-cb");
+      const set = new Set(state.selectedMasterIds || []);
+      checkboxes.forEach(cb => {
+        cb.checked = isChecked;
+        const id = cb.getAttribute("data-id");
+        if (id) {
+          if (isChecked) set.add(id);
+          else set.delete(id);
         }
       });
+      state.selectedMasterIds = Array.from(set);
+      updateMasterSelectionToolbar();
+    }
 
-      weekFilter.innerHTML = `<option value="ALL">All Weeks (Grouped Weekly)</option>` +
-        Array.from(weekMap.entries())
-          .sort((a, b) => b[0].localeCompare(a[0]))
-          .map(([wk, lbl]) => `<option value="${escapeHtml(wk)}" ${currentWeekVal === wk ? "selected" : ""}>${escapeHtml(lbl)}</option>`)
-          .join("");
-
-      const selectedWeek = weekFilter.value;
-      const selectedUseCase = useCaseFilter.value;
-      const sortOrder = sortSelect.value;
-
-      const filtered = state.prebuiltSets.filter(s => {
-        if (selectedWeek !== "ALL" && s.weekKey !== selectedWeek) return false;
-        if (selectedUseCase !== "ALL" && s.useCase !== selectedUseCase) return false;
-        return true;
-      });
-
-      if (countEl) countEl.textContent = filtered.length;
-
-      if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="bg-[#1e293b] border border-dashed border-[#334155] rounded-2xl p-10 text-center">
-            <p class="text-sm font-semibold text-slate-300 mb-1">No Pre-Built PC Sets yet.</p>
-            <p class="text-xs text-slate-400">Whenever you click <strong class="text-emerald-400">Copy for WhatsApp</strong> or <strong class="text-cyan-400">PDF Quote</strong>, external peripherals are stripped and the core PC automatically saves here as Build #1, #2, #3...</p>
-          </div>
-        `;
+    function openManualMergeModal() {
+      if (!isAdminUser()) {
+        showToast("Only Admin (Ashwin) can merge Master Sheet items.", "amber");
+        return;
+      }
+      const selectedItems = state.masterItems.filter(m => state.selectedMasterIds.includes(m.id));
+      if (selectedItems.length < 2) {
+        showToast("Select at least 2 items to merge.", "amber");
         return;
       }
 
-      const grouped = new Map();
-      filtered.forEach(s => {
-        const wk = s.weekKey || "UNGROUPED";
-        if (!grouped.has(wk)) {
-          grouped.set(wk, { label: s.weekLabel || wk, items: [] });
+      selectedItems.sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0));
+      const listEl = document.getElementById("manualMergeCandidatesList");
+      const nameInput = document.getElementById("manualMergeFinalNameInput");
+
+      listEl.innerHTML = selectedItems.map((item, idx) => `
+        <label class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-[#0f172a] border ${idx === 0 ? 'border-cyan-500/60' : 'border-[#334155]'} cursor-pointer hover:border-cyan-400">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <input type="radio" name="manualMergePrimaryRadio" value="${item.id}" ${idx === 0 ? "checked" : ""}
+              onchange="onManualMergePrimaryChanged('${item.id}')" class="accent-cyan-500 cursor-pointer" />
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-white truncate">${escapeHtml(item.name)}</div>
+              <div class="text-[10px] text-slate-400">${escapeHtml(item.category)} • ${escapeHtml(item.warranty)} • Updated: ${escapeHtml(item.lastUpdated || "—")}</div>
+            </div>
+          </div>
+          <span class="font-mono text-xs font-bold text-amber-300 shrink-0">₹${formatINR(item.gettingPrice)}</span>
+        </label>
+      `).join("");
+
+      nameInput.value = standardizeAllCapsComponentName(selectedItems[0].name, selectedItems[0].category, true);
+      openModal("manualMergeModal");
+    }
+
+    function onManualMergePrimaryChanged(primaryId) {
+      const item = state.masterItems.find(m => m.id === primaryId);
+      if (!item) return;
+      document.getElementById("manualMergeFinalNameInput").value = standardizeAllCapsComponentName(item.name, item.category, true);
+    }
+
+    async function executeManualMasterMerge() {
+      if (!isAdminUser()) return;
+      const selectedRadio = document.querySelector('input[name="manualMergePrimaryRadio"]:checked');
+      if (!selectedRadio) return;
+
+      const primaryId = selectedRadio.value;
+      const winner = state.masterItems.find(m => m.id === primaryId);
+      if (!winner) return;
+
+      const customFinalName = standardizeAllCapsComponentName(
+        document.getElementById("manualMergeFinalNameInput").value.trim() || winner.name,
+        winner.category,
+        true
+      );
+      const updateHistory = document.getElementById("manualMergeUpdateHistory").checked;
+
+      const losers = state.masterItems.filter(m => state.selectedMasterIds.includes(m.id) && m.id !== primaryId);
+      const loserNamesSet = new Set(losers.map(l => l.name.toUpperCase()));
+
+      losers.forEach(l => {
+        recordDeletedId(l.id);
+        if (l.normKey && l.normKey !== buildTokenFingerprint(customFinalName)) {
+          recordDeletedId(l.normKey);
         }
-        grouped.get(wk).items.push(s);
       });
 
-      const sortedWeeks = Array.from(grouped.entries()).sort((a, b) => b[0].localeCompare(a[0]));
+      winner.name = customFinalName;
+      winner.normKey = buildTokenFingerprint(customFinalName);
+      winner.updatedAt = Date.now();
+      winner.lastUpdated = getTodayIsoLocal();
 
-      container.innerHTML = sortedWeeks.map(([wk, group]) => {
-        const sortedItems = group.items.slice().sort((a, b) => {
-          if (sortOrder === "price_desc") return b.coreQuotePrice - a.coreQuotePrice;
-          if (sortOrder === "build_desc") return (b.buildNumber || 0) - (a.buildNumber || 0);
-          return a.coreQuotePrice - b.coreQuotePrice;
+      const loserIdsSet = new Set(losers.map(l => l.id));
+      state.masterItems = state.masterItems.filter(m => !loserIdsSet.has(m.id));
+      state.selectedMasterIds = [];
+
+      if (updateHistory && loserNamesSet.size > 0) {
+        state.savedQuotes.forEach(q => {
+          (q.components || []).forEach(c => {
+            if (loserNamesSet.has(String(c.name || "").toUpperCase())) {
+              c.name = customFinalName;
+            }
+          });
         });
-
-        const cardsHtml = sortedItems.map(s => {
-          const coreList = (s.coreComponents || []).map(c =>
-            `<div class="flex items-center justify-between gap-2 text-[11px] py-1 border-b border-[#334155]/60 last:border-none">
-              <span class="text-slate-400 font-medium shrink-0">${escapeHtml(c.category)}</span>
-              <span class="text-slate-100 truncate text-right">${(c.qty || 1) > 1 ? c.qty + "x " : ""}${escapeHtml(c.name)}</span>
-            </div>`
-          ).join("");
-
-          const strippedBadge = (s.strippedExternalNames && s.strippedExternalNames.length > 0)
-            ? `<div class="mt-2 text-[10px] text-purple-300 bg-purple-950/40 border border-purple-500/30 rounded-lg px-2 py-1">
-                Stripped External: ${escapeHtml(s.strippedExternalNames.join(", "))}
-              </div>`
-            : "";
-
-          const deleteBtnHtml = isAdminUser()
-            ? `<button type="button" onclick="deletePrebuiltSet('${s.id}')" class="p-2 rounded-xl bg-[#0f172a] hover:bg-red-950/60 text-slate-400 hover:text-red-400 border border-[#334155] transition cursor-pointer" title="Delete Set (Admin)">✕</button>`
-            : "";
-
-          return `
-            <div class="bg-[#1e293b] border border-[#334155] hover:border-cyan-500/50 rounded-2xl p-4 flex flex-col justify-between shadow-lg transition">
-              <div>
-                <div class="flex items-center justify-between gap-2 mb-2">
-                  <div class="flex items-center gap-1.5">
-                    ${s.buildNumber ? `<span class="px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 font-mono text-[11px] font-extrabold border border-cyan-500/40">Build #${s.buildNumber}</span>` : ""}
-                    <span class="px-2 py-0.5 rounded-md bg-[#0f172a] text-amber-300 font-mono text-[10px] font-bold border border-[#334155]">${escapeHtml(s.refCode)}</span>
-                  </div>
-                  <span class="text-[10px] font-semibold text-slate-300">${escapeHtml(s.useCaseLabel || "")}</span>
-                </div>
-
-                <h4 class="text-sm font-bold text-white mb-2.5">${escapeHtml(s.buildName || s.title)}</h4>
-
-                <div class="bg-[#0f172a] border border-[#334155] rounded-xl p-2.5 mb-3">
-                  ${coreList}
-                </div>
-                ${strippedBadge}
-              </div>
-
-              <div class="pt-3 mt-3 border-t border-[#334155]">
-                <div class="grid grid-cols-3 gap-1.5 text-center mb-3">
-                  <div class="bg-[#0f172a] rounded-lg p-1.5 border border-[#334155]">
-                    <span class="block text-[9px] text-slate-400 uppercase">Base Cost</span>
-                    <span class="text-[11px] font-mono font-bold text-slate-200">₹${formatINR(s.coreBaseCost)}</span>
-                  </div>
-                  <div class="bg-[#0f172a] rounded-lg p-1.5 border border-[#334155]">
-                    <span class="block text-[9px] text-slate-400 uppercase">24% Floor</span>
-                    <span class="text-[11px] font-mono font-bold text-amber-300">₹${formatINR(s.coreFloor24Price)}</span>
-                  </div>
-                  <div class="bg-emerald-950/60 rounded-lg p-1.5 border border-emerald-500/40">
-                    <span class="block text-[9px] text-emerald-300 uppercase">Quote Price</span>
-                    <span class="text-xs font-mono font-extrabold text-emerald-300">₹${formatINR(s.coreQuotePrice)}/-</span>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2">
-                  <button type="button" onclick="loadPrebuiltIntoGenerator('${s.id}')" class="flex-1 py-2 px-3 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white transition cursor-pointer">
-                    Load Core PC into Quote
-                  </button>
-                  ${deleteBtnHtml}
-                </div>
-              </div>
-            </div>
-          `;
-        }).join("");
-
-        return `
-          <div class="space-y-3">
-            <div class="flex items-center justify-between px-1">
-              <h3 class="text-sm font-bold text-cyan-300 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-                ${escapeHtml(group.label)}
-              </h3>
-              <span class="text-xs font-mono text-slate-400">${sortedItems.length} build(s)</span>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              ${cardsHtml}
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function loadPrebuiltIntoGenerator(setId) {
-      const set = state.prebuiltSets.find(s => s.id === setId);
-      if (!set) return;
-
-      const todayIso = getTodayIsoLocal();
-      state.editingQuoteBaseCode = null;
-      document.getElementById("quoteDateInput").value = todayIso;
-      document.getElementById("refCodeInput").value = generateNextRefCode(todayIso);
-      const cleanTitle = (set.buildName || set.title || "Custom PC Build").replace(/^Build\s*#?\d+\s*[—\-:]\s*/i, "").trim();
-      document.getElementById("buildTitleInput").value = cleanTitle;
-      if (set.useCase && USE_CASE_PRESETS[set.useCase]) {
-        document.getElementById("useCaseSelect").value = set.useCase;
-        state.highlights = JSON.parse(JSON.stringify(USE_CASE_PRESETS[set.useCase].highlights)).map(h => ({ id: uid(), ...h }));
+        state.prebuiltSets.forEach(s => {
+          (s.coreComponents || []).forEach(c => {
+            if (loserNamesSet.has(String(c.name || "").toUpperCase())) {
+              c.name = customFinalName;
+            }
+          });
+        });
       }
-      state.components = JSON.parse(JSON.stringify(set.coreComponents || [])).map(c => ({ ...c, id: uid() }));
 
-      updateQuoteModeBadge();
-      renderHighlightsList();
-      renderComponentRows();
-      setGlobalMargin(set.marginUsed ?? 24, "pill");
-      switchWorkspaceTab("generator");
-      showToast(`Loaded ${set.buildName || set.title} into Quote Generator!`, "emerald");
-    }
+      saveLocalOnly();
+      refreshAllViews();
+      closeModal("manualMergeModal");
 
-    function deletePrebuiltSet(setId) {
-      if (!isAdminUser()) {
-        showToast("Only Admin (Ashwin) can delete Pre-Built sets.", "amber");
-        return;
+      if (state.cloudSyncUrl) {
+        await pushDirectSnapshotToCloud();
       }
-      recordDeletedId(setId);
-      state.prebuiltSets = state.prebuiltSets.filter(s => s.id !== setId);
-      persistDatabaseToStorage();
-      renderPrebuiltSets();
-      syncMasterAndPrebuiltsToGoogleSheet(true);
-      showToast("Removed Pre-Built PC set.", "amber");
+      await syncMasterAndPrebuiltsToGoogleSheet(true);
+      showToast(`🔗 Merged ${losers.length + 1} items into "${customFinalName}"!`, "emerald");
     }
 
-    function exportPrebuiltsCSV() {
-      if (!isAdminUser()) {
-        showToast("Only Admin (Ashwin) can export CSV sheets.", "amber");
-        return;
-      }
-      const sortOrder = document.getElementById("prebuiltSortSelect").value;
-      const sorted = state.prebuiltSets.slice().sort((a, b) => {
-        if (a.weekKey !== b.weekKey) return b.weekKey.localeCompare(a.weekKey);
-        return sortOrder === "price_desc" ? (b.coreQuotePrice - a.coreQuotePrice) : (a.coreQuotePrice - b.coreQuotePrice);
-      });
-
-      const headers = [
-        "Build #", "Build Name", "Week", "Date", "Ref Code", "Use Case", "Processor", "Motherboard", "RAM",
-        "Storage", "GPU", "Cooler", "PSU", "Cabinet",
-        "Core Base Cost", "24% Floor Price", "28% Target Price", "Saved Quote Price"
-      ];
-
-      const getCat = (set, cat) => set.coreComponents.find(c => c.category === cat)?.name || "";
-
-      const rows = sorted.map(s => [
-        s.buildNumber || "",
-        s.buildName || s.title,
-        s.weekLabel,
-        s.quoteDate,
-        s.refCode,
-        s.useCaseLabel,
-        getCat(s, "Processor"),
-        getCat(s, "Motherboard"),
-        getCat(s, "RAM"),
-        getCat(s, "Storage (SSD)"),
-        getCat(s, "Graphics Card"),
-        getCat(s, "CPU Cooler"),
-        getCat(s, "Power Supply"),
-        getCat(s, "Cabinet"),
-        s.coreBaseCost,
-        s.coreFloor24Price,
-        s.coreTarget28Price,
-        s.coreQuotePrice
-      ]);
-
-      downloadCSVFile(`Media_Faktory_PreBuilt_PCs_${new Date().toISOString().slice(0,10)}.csv`, headers, rows);
-    }
-
-    // =========================================================================
-    // 15. TAB 5: MASTER COMPONENT PRICE SHEET
-    // =========================================================================
     function renderMasterSheet() {
       const query = (document.getElementById("masterSearchInput").value || "").toLowerCase().trim();
       const catFilter = document.getElementById("masterCategoryFilter").value;
       const sortBy = document.getElementById("masterSortSelect").value;
+
+      updateMasterSelectionToolbar();
+      const selectAllCb = document.getElementById("masterSelectAllCheckbox");
+      if (selectAllCb) selectAllCb.checked = false;
 
       let items = state.masterItems.filter(item => {
         if (catFilter !== "ALL" && item.category !== catFilter) return false;
@@ -5001,7 +5250,7 @@
       if (items.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="8" class="py-10 text-center text-slate-400">
+            <td colspan="9" class="py-10 text-center text-slate-400">
               No components match your filter.
             </td>
           </tr>
@@ -5009,9 +5258,12 @@
         return;
       }
 
+      const selectedSet = new Set(state.selectedMasterIds || []);
+
       tbody.innerHTML = items.map(item => {
         const floor24 = item.isNetPrice ? item.gettingPrice : Math.round(item.gettingPrice * 1.24);
         const target28 = item.isNetPrice ? item.gettingPrice : Math.round(item.gettingPrice * 1.28);
+        const isChecked = selectedSet.has(item.id);
 
         let updateBadge = `<span class="text-[11px] text-slate-400 font-mono">${escapeHtml(item.lastUpdated || "—")}</span>`;
         if (item.previousPrice && item.previousPrice !== item.gettingPrice) {
@@ -5035,7 +5287,12 @@
           : "";
 
         return `
-          <tr class="hover:bg-slate-800/50 transition">
+          <tr class="${isChecked ? 'bg-cyan-950/35' : 'hover:bg-slate-800/50'} transition">
+            <td class="py-3 px-3 text-center">
+              <input type="checkbox" data-id="${item.id}" ${isChecked ? "checked" : ""}
+                onchange="toggleMasterItemSelection('${item.id}', this.checked)"
+                class="master-row-select-cb accent-cyan-500 cursor-pointer" />
+            </td>
             <td class="py-3 px-4 font-semibold text-slate-300 whitespace-nowrap">${escapeHtml(item.category)}</td>
             <td class="py-3 px-4 font-medium text-white max-w-md">${escapeHtml(item.name)}</td>
             <td class="py-3 px-4 whitespace-nowrap">
@@ -5253,7 +5510,7 @@
       showToast("Master Price Sheet updated in ALL-CAPS!", "emerald");
     }
 
-    function deleteMasterItem(itemId) {
+    async function deleteMasterItem(itemId) {
       if (!isAdminUser()) {
         showToast("Only Admin (Ashwin) can delete master items.", "amber");
         return;
@@ -5264,8 +5521,11 @@
         recordDeletedId(target.normKey);
       }
       state.masterItems = state.masterItems.filter(m => m.id !== itemId);
-      persistDatabaseToStorage();
+      saveLocalOnly();
       refreshAllViews();
+      if (state.cloudSyncUrl) {
+        await pushDirectSnapshotToCloud();
+      }
       syncMasterAndPrebuiltsToGoogleSheet(true);
       showToast("Item deleted from Master Sheet.", "amber");
     }
@@ -5449,7 +5709,7 @@
       document.getElementById("enqSourceInput").value = "Whatsapp";
       document.getElementById("enqStatusInput").value = "Open";
       document.getElementById("enqTempInput").value = "Warm";
-      document.getElementById("enqFollowUpInput").value = "";
+      document.getElementById("enqFollowUpInput").value = addDaysIso(1);
       document.getElementById("enqNotesInput").value = "";
       document.getElementById("enqRepeatBadge").classList.add("hidden");
       const defaultOwner = currentUser ? currentUser.displayName : (localStorage.getItem(DB_KEYS.OWNER_PREF) || "");
@@ -5566,7 +5826,43 @@
       persistDatabaseToStorage();
       refreshAllViews();
       syncEnquiryToGoogleSheet(e);
-      showToast(`Marked as ${newStatus}`, "emerald");
+      showToast(`Status updated to "${newStatus}"`, "emerald");
+    }
+
+    function quickUpdateEnquiryFollowUp(enqId, newIsoDate) {
+      const e = state.enquiries.find(x => x.id === enqId);
+      if (!e) return;
+      e.nextFollowUp = newIsoDate || "";
+      e.updatedAt = Date.now();
+      e.sheetSynced = false;
+      persistDatabaseToStorage();
+      refreshAllViews();
+      syncEnquiryToGoogleSheet(e);
+      showToast(newIsoDate ? `Next follow-up set to ${formatSheetDate(newIsoDate)}` : "Follow-up date cleared", "emerald");
+    }
+
+    function appendQuickEnquiryCallNote(enqId) {
+      const inputEl = document.getElementById(`enq_quick_note_${enqId}`);
+      if (!inputEl) return;
+      const noteText = inputEl.value.trim();
+      if (!noteText) {
+        showToast("Type a quick call note first.", "amber");
+        return;
+      }
+      const e = state.enquiries.find(x => x.id === enqId);
+      if (!e) return;
+
+      const stamp = `${formatSheetDate(getTodayIsoLocal())} (${currentUser ? currentUser.displayName : "Staff"})`;
+      const formattedLine = `[${stamp}] ${noteText}`;
+      e.notes = e.notes ? `${e.notes}\n${formattedLine}` : formattedLine;
+      e.updatedAt = Date.now();
+      e.sheetSynced = false;
+      inputEl.value = "";
+
+      persistDatabaseToStorage();
+      refreshAllViews();
+      syncEnquiryToGoogleSheet(e);
+      showToast("Call note logged & synced!", "emerald");
     }
 
     function deleteEnquiry(enqId) {
@@ -5594,6 +5890,14 @@
       const e = state.enquiries.find(x => x.id === enqId);
       if (!e) return;
       state.activeEnquiryId = e.id;
+
+      const existingQuotes = findQuotesForEnquiry(e);
+      if (existingQuotes.length > 0) {
+        loadSavedQuoteForRevision(existingQuotes[0].id);
+        updateLinkedEnquiryBanner();
+        return;
+      }
+
       state.editingQuoteBaseCode = null;
       document.getElementById("refCodeInput").value = generateNextRefCode(getTodayIsoLocal());
       document.getElementById("customerNameInput").value = e.customer || "";
@@ -5605,6 +5909,22 @@
       updateLinkedEnquiryBanner();
       switchWorkspaceTab("generator");
       showToast(`Building quote for ${e.customer || e.phone}`, "emerald");
+    }
+
+    function findQuotesForEnquiry(e) {
+      if (!e) return [];
+      const pKey = normalizePhoneKey(e.phone);
+      const cName = String(e.customer || "").trim().toLowerCase();
+
+      const matches = (state.savedQuotes || []).filter(q => {
+        const qPhone = normalizePhoneKey(q.customerPhone);
+        if (pKey && pKey.length >= 10 && qPhone === pKey) return true;
+        const qName = String(q.customerName || "").trim().toLowerCase();
+        if (cName && cName.length >= 3 && qName === cName) return true;
+        return false;
+      });
+
+      return matches.sort((a, b) => Number(b.updatedAt || 0) - Number(a.updatedAt || 0));
     }
 
     function unlinkActiveEnquiry() {
@@ -5790,8 +6110,18 @@
           ? `<button type="button" onclick="deleteEnquiry('${e.id}')" class="p-1.5 rounded-lg bg-[#0f172a] hover:bg-red-950/60 text-slate-400 hover:text-red-400 border border-[#334155] cursor-pointer" title="Delete from App (Admin)">✕</button>`
           : "";
 
+        const matchedQuotes = findQuotesForEnquiry(e);
+        const hasExistingQuote = matchedQuotes.length > 0 || e.status === "Quotation Given";
+        const quoteActionBtnHtml = hasExistingQuote
+          ? `<button type="button" onclick="launchQuoteFromEnquiry('${e.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/45 cursor-pointer" title="${matchedQuotes[0] ? 'Revise ' + escapeHtml(matchedQuotes[0].refCode) : 'Create Revision Quote'}">
+              ✏️ Revise Quote${matchedQuotes[0] ? ' (' + escapeHtml(matchedQuotes[0].refCode) + ')' : ''}
+            </button>`
+          : `<button type="button" onclick="launchQuoteFromEnquiry('${e.id}')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer">
+              🧾 Build Quote
+            </button>`;
+
         return `
-          <div class="bg-[#1e293b] border ${cardBorder} hover:border-slate-500 rounded-2xl p-4 shadow-lg transition">
+          <div class="bg-[#1e293b] border ${cardBorder} hover:border-slate-500 rounded-2xl p-3.5 shadow-lg transition">
             <div class="flex flex-wrap items-start justify-between gap-2 mb-2">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="text-sm font-bold text-white">${tempIcon} ${escapeHtml(e.customer || "Unnamed Lead")}</span>
@@ -5800,11 +6130,18 @@
               </div>
               <div class="flex items-center gap-2">
                 ${sheetPill}
-                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${statusColor}">${escapeHtml(e.status)}</span>
+                <select onchange="quickUpdateEnquiryStatus('${e.id}', this.value)" title="Change Enquiry Status directly"
+                  class="px-2 py-1 rounded-md text-[11px] font-bold border outline-none cursor-pointer ${statusColor}">
+                  <option value="Open" ${e.status === "Open" ? "selected" : ""}>Open</option>
+                  <option value="Quotation Given" ${e.status === "Quotation Given" ? "selected" : ""}>Quotation Given</option>
+                  <option value="Follow-Up" ${e.status === "Follow-Up" ? "selected" : ""}>Follow-Up</option>
+                  <option value="Won / Billed" ${e.status === "Won / Billed" ? "selected" : ""}>✅ Won / Billed</option>
+                  <option value="Closed" ${e.status === "Closed" ? "selected" : ""}>Closed</option>
+                </select>
               </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-1.5 mb-2.5 text-[11px]">
+            <div class="flex flex-wrap items-center gap-1.5 mb-2 text-[11px]">
               <span class="px-2 py-0.5 rounded-md bg-[#0f172a] text-slate-200 font-semibold border border-[#334155]">${escapeHtml(e.requirement || "General")}</span>
               ${e.budget ? `<span class="px-2 py-0.5 rounded-md bg-emerald-950/60 text-emerald-300 font-mono font-semibold border border-emerald-500/30">Budget: ${escapeHtml(e.budget)}</span>` : ""}
               ${e.owner ? `<span class="px-2 py-0.5 rounded-md bg-[#0f172a] text-cyan-300 border border-[#334155]">Owner: ${escapeHtml(e.owner)}</span>` : ""}
@@ -5813,20 +6150,38 @@
               ${followUpPill}
             </div>
 
-            ${e.notes ? `<div class="bg-[#0f172a] border border-[#334155] rounded-xl p-2.5 text-xs text-slate-200 whitespace-pre-line mb-3">${escapeHtml(e.notes)}</div>` : ""}
+            ${e.notes ? `<div class="bg-[#0f172a] border border-[#334155] rounded-xl px-2.5 py-2 text-xs text-slate-200 whitespace-pre-line mb-2">${escapeHtml(e.notes)}</div>` : ""}
 
-            <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#334155]">
+            <!-- Single-Line Compact Follow-Up, Quick Note & Action Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-1.5 pt-2 border-t border-[#334155] text-[11px]">
               <div class="flex flex-wrap items-center gap-1.5">
-                <button type="button" onclick="editEnquiry('${e.id}')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-200 border border-[#334155] cursor-pointer">
-                  ✏️ Edit / Note
-                </button>
-                <button type="button" onclick="launchQuoteFromEnquiry('${e.id}')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer">
-                  🧾 Build Quote
-                </button>
-                ${e.status !== "Won / Billed" ? `<button type="button" onclick="quickUpdateEnquiryStatus('${e.id}', 'Won / Billed')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-emerald-950/70 hover:bg-emerald-900/70 text-emerald-300 border border-emerald-500/35 cursor-pointer">✅ Won</button>` : ""}
-                ${e.status !== "Closed" ? `<button type="button" onclick="quickUpdateEnquiryStatus('${e.id}', 'Closed')" class="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-[#334155] cursor-pointer">Close</button>` : ""}
+                <div class="inline-flex items-center gap-1 bg-[#0f172a] border border-[#334155] rounded-lg px-1.5 py-0.5" title="Next Follow-Up Date">
+                  <span class="text-[10px] text-slate-400 font-semibold">📅</span>
+                  <input type="date" value="${escapeHtml(e.nextFollowUp || "")}"
+                    onchange="quickUpdateEnquiryFollowUp('${e.id}', this.value)"
+                    class="bg-transparent ${isOverdue ? 'text-red-300 font-bold' : (isDueToday ? 'text-amber-300 font-bold' : 'text-slate-200')} text-[11px] font-mono outline-none [color-scheme:dark] cursor-pointer w-[112px]" />
+                  <button type="button" onclick="quickUpdateEnquiryFollowUp('${e.id}', addDaysIso(1))" class="px-1 py-0.2 rounded bg-[#1e293b] hover:bg-slate-700 text-[10px] text-amber-300 font-semibold cursor-pointer" title="Tomorrow">+1d</button>
+                </div>
+
+                <div class="inline-flex items-center gap-1 bg-[#0f172a] border border-[#334155] rounded-lg px-1.5 py-0.5">
+                  <input type="text" id="enq_quick_note_${e.id}" placeholder="Quick note..."
+                    onkeydown="if(event.key==='Enter'){ event.preventDefault(); appendQuickEnquiryCallNote('${e.id}'); }"
+                    class="bg-transparent text-[11px] text-white placeholder-slate-500 outline-none w-24 sm:w-28 focus:w-40 transition-all" />
+                  <button type="button" onclick="appendQuickEnquiryCallNote('${e.id}')" class="px-1.5 py-0.2 rounded bg-emerald-600/25 hover:bg-emerald-600/40 text-[10px] text-emerald-300 font-bold cursor-pointer" title="Save Call Note">
+                    +Note
+                  </button>
+                </div>
               </div>
-              ${deleteEnqBtn}
+
+              <div class="flex flex-wrap items-center gap-1.5">
+                <button type="button" onclick="editEnquiry('${e.id}')" class="px-2 py-1 rounded-lg text-[11px] font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-200 border border-[#334155] cursor-pointer" title="Full Edit">
+                  ✏️ Edit
+                </button>
+                ${quoteActionBtnHtml}
+                ${e.status !== "Won / Billed" ? `<button type="button" onclick="quickUpdateEnquiryStatus('${e.id}', 'Won / Billed')" class="px-2 py-1 rounded-lg text-[11px] font-semibold bg-emerald-950/70 hover:bg-emerald-900/70 text-emerald-300 border border-emerald-500/35 cursor-pointer">✅ Won</button>` : ""}
+                ${e.status !== "Closed" ? `<button type="button" onclick="quickUpdateEnquiryStatus('${e.id}', 'Closed')" class="px-2 py-1 rounded-lg text-[11px] font-semibold bg-[#0f172a] hover:bg-slate-800 text-slate-400 hover:text-slate-200 border border-[#334155] cursor-pointer">Close</button>` : ""}
+                ${deleteEnqBtn}
+              </div>
             </div>
           </div>
         `;
@@ -6114,6 +6469,7 @@
       document.getElementById("summaryGstAmount").textContent = `₹${formatINR(gstAmount)}`;
       document.getElementById("summaryFinalTotal").textContent = `₹${formatINR(totalFinal)}/-`;
       updateLinkedEnquiryBanner();
+
       const profitCard = document.getElementById("profitSummaryCard");
       const profitText = document.getElementById("summaryProfit");
       if (state.globalMargin > 0 && profitPctOnBase < 4.95) {
