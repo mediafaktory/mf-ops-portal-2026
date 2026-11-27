@@ -8,7 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -27,10 +27,22 @@
     ::-webkit-scrollbar-track { background: #0f172a; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
     ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     .wa-bg {
       background-color: #0b141a;
       background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 0);
       background-size: 18px 18px;
+    }
+    .perf-card {
+      content-visibility: auto;
+      contain-intrinsic-size: 140px;
+    }
+    @media (max-width: 1023px) {
+      header.sticky {
+        backdrop-filter: none !important;
+        background-color: #0f172a !important;
+      }
     }
   </style>
 </head>
@@ -95,7 +107,7 @@
     </div>
   </div>
 
-  <!-- Top Header & 7-Tab Navigation -->
+  <!-- Top Header & Navigation -->
   <header class="sticky top-0 z-30 bg-[#0f172a]/95 backdrop-blur-md border-b border-[#334155]">
     <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
       <!-- Brand Identity -->
@@ -130,7 +142,7 @@
       </div>
 
       <!-- Primary Workspace Tabs -->
-      <nav class="flex items-center bg-[#1e293b] p-1 rounded-xl border border-[#334155] overflow-x-auto max-w-full">
+      <nav class="flex items-center bg-[#1e293b] p-1 rounded-xl border border-[#334155] overflow-x-auto no-scrollbar max-w-full">
         <button type="button" id="tabBtn_enquiries" onclick="switchWorkspaceTab('enquiries')"
           class="workspace-tab-btn inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer bg-emerald-600 text-white shadow shrink-0">
           <span>1. Enquiries</span>
@@ -183,20 +195,172 @@
           <span class="hidden sm:inline">Backup / Sync</span>
         </button>
 
-        <!-- Logged-In User Badge & Menu -->
-        <div class="flex items-center gap-1.5 pl-1.5 border-l border-[#334155]">
-          <button type="button" onclick="openPasswordModal()" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#1e293b] hover:bg-slate-700 text-white border border-[#334155] transition cursor-pointer" title="Click to change password">
+        <!-- Logged-In User Badge & Dropdown Menu -->
+        <div class="relative flex items-center gap-1.5 pl-1.5 border-l border-[#334155]" id="userMenuContainer">
+          <button type="button" onclick="toggleUserProfileDropdown(event)" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-[#1e293b] hover:bg-slate-700 text-white border border-[#334155] transition cursor-pointer" title="Account &amp; Options">
             <span id="currentUserRoleDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
             <span id="currentUserDisplayName">User</span>
             <span id="currentUserRoleBadge" class="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase bg-slate-800 text-slate-300">USER</span>
+            <svg class="w-3 h-3 text-slate-400 ml-0.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
           </button>
-          <button type="button" onclick="logoutTeamUser()" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-red-950/60 hover:bg-red-900/70 text-red-300 border border-red-500/35 transition cursor-pointer" title="Sign Out">
-            Logout
-          </button>
+
+          <!-- User Profile Dropdown -->
+          <div id="userProfileDropdown" class="hidden absolute right-0 top-full mt-2 w-56 bg-[#1e293b] border border-[#334155] rounded-xl shadow-2xl py-1.5 z-50 text-xs">
+            <button type="button" onclick="closeUserProfileDropdown(); switchWorkspaceTab('admin');"
+              class="admin-only-control hidden w-full text-left px-3.5 py-2.5 hover:bg-amber-500/15 text-amber-300 font-bold flex items-center justify-between transition cursor-pointer">
+              <span>📊 Admin Dashboard</span>
+              <span id="navAdminAlertsCount" class="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-red-950 text-red-300 border border-red-500/40">0</span>
+            </button>
+            <button type="button" onclick="closeUserProfileDropdown(); openPasswordModal();"
+              class="w-full text-left px-3.5 py-2.5 hover:bg-slate-700/70 text-slate-200 font-medium flex items-center gap-2 transition cursor-pointer">
+              <span>🔑 Change Password</span>
+            </button>
+            <div class="my-1 border-t border-[#334155]"></div>
+            <button type="button" onclick="closeUserProfileDropdown(); logoutTeamUser();"
+              class="w-full text-left px-3.5 py-2 hover:bg-red-950/60 text-red-300 font-semibold flex items-center gap-2 transition cursor-pointer">
+              <span>🚪 Logout</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </header>
+
+  <!-- ======================================================================= -->
+  <!-- TAB 0: ADMIN EXECUTIVE DASHBOARD (ASHWIN ONLY - VIA USER DROPDOWN)      -->
+  <!-- ======================================================================= -->
+  <section id="workspace_admin" class="workspace-panel hidden flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-6 flex-col gap-5">
+    <div class="bg-[#1e293b] border border-amber-500/35 rounded-2xl p-4 sm:p-5 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40">ADMIN COMMAND CENTER</span>
+          <h2 class="text-base sm:text-lg font-extrabold text-white">Media Faktory — Executive Business &amp; Team Overview</h2>
+        </div>
+        <p class="text-xs text-slate-400 mt-0.5">Live telemetry across Enquiries, Quotes, Master Prices, PC Builds &amp; Service/RMA (Calicut &amp; Kochi)</p>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <select id="adminPeriodFilter" onchange="renderAdminDashboard()"
+          class="bg-[#0f172a] border border-amber-500/40 rounded-xl px-3 py-2 text-xs font-bold text-amber-300 outline-none cursor-pointer">
+          <option value="MONTH" selected>This Month</option>
+          <option value="WEEK">Last 7 Days</option>
+          <option value="TODAY">Today Only</option>
+          <option value="ALL">All Time Data</option>
+        </select>
+        <select id="adminBranchFilter" onchange="renderAdminDashboard()"
+          class="bg-[#0f172a] border border-[#334155] rounded-xl px-3 py-2 text-xs font-semibold text-white outline-none cursor-pointer">
+          <option value="ALL">All Branches</option>
+          <option value="Calicut">Calicut Branch</option>
+          <option value="Kochi">Kochi Branch</option>
+        </select>
+        <button type="button" onclick="copyAdminExecutiveSummary()"
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 shadow transition cursor-pointer">
+          <span>📲 Copy Daily Report</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="adminExecutiveKpis" class="grid grid-cols-2 lg:grid-cols-6 gap-3"></div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div class="lg:col-span-8 bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 shadow-xl">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
+            Red-Flag Bottlenecks &amp; Action Required
+          </h3>
+          <span id="adminAlertsSummaryBadge" class="text-[11px] font-mono text-slate-400">0 items</span>
+        </div>
+        <div id="adminBottlenecksContainer" class="space-y-2 max-h-72 overflow-y-auto pr-1"></div>
+      </div>
+
+      <div class="lg:col-span-4 bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col justify-between">
+        <div>
+          <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+            Branch Performance Split
+          </h3>
+          <div id="adminBranchSplitContainer" class="space-y-3"></div>
+        </div>
+        <div class="pt-3 mt-3 border-t border-[#334155]">
+          <div class="text-[11px] font-bold text-slate-300 mb-2">Lead Source Win Breakdown</div>
+          <div id="adminLeadSourcesContainer" class="flex flex-wrap gap-1.5"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 shadow-xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
+        <div>
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            Team Scorecard &amp; Active Workload (Click any staff row to inspect their work)
+          </h3>
+          <p class="text-[11px] text-slate-400">Tracks Sales Leads, Quotes Issued, Win Rates, PC Builds &amp; Service/RMA tickets per person</p>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-[#0f172a] border-b border-[#334155] text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <th class="py-2.5 px-3">Team Member</th>
+              <th class="py-2.5 px-3">Role</th>
+              <th class="py-2.5 px-3 text-center">Active Leads</th>
+              <th class="py-2.5 px-3 text-center">Overdue</th>
+              <th class="py-2.5 px-3 text-center">Quotes Issued</th>
+              <th class="py-2.5 px-3 text-right">Quoted Value</th>
+              <th class="py-2.5 px-3 text-center">Won / Billed</th>
+              <th class="py-2.5 px-3 text-center">Active Builds</th>
+              <th class="py-2.5 px-3 text-center">Open Service/RMA</th>
+              <th class="py-2.5 px-3 text-right">Inspect</th>
+            </tr>
+          </thead>
+          <tbody id="adminStaffTableBody" class="divide-y divide-[#334155] text-xs"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div class="lg:col-span-6 bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 shadow-xl">
+        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+          Top Quoted Processors &amp; Graphics Cards (Stock Demand)
+        </h3>
+        <div id="adminTopHardwareContainer" class="space-y-2"></div>
+      </div>
+
+      <div class="lg:col-span-6 bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 shadow-xl">
+        <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+          Latest Team Operations Feed
+        </h3>
+        <div id="adminRecentFeedContainer" class="space-y-2 max-h-72 overflow-y-auto pr-1"></div>
+      </div>
+    </div>
+
+    <!-- Admin Account & Security Settings inside Admin Dashboard -->
+    <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          Admin Account &amp; Security Settings
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5">Update your Admin login password for the Media Faktory Operations Suite</p>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <input type="password" id="adminInlineOldPwd" placeholder="Current password"
+          class="bg-[#0f172a] border border-[#334155] focus:border-amber-500 rounded-xl px-3 py-2 text-white outline-none w-40" />
+        <input type="password" id="adminInlineNewPwd" placeholder="New password (min 4 chars)"
+          class="bg-[#0f172a] border border-[#334155] focus:border-amber-500 rounded-xl px-3 py-2 text-white outline-none w-48" />
+        <button type="button" onclick="saveAdminInlinePassword()"
+          class="px-4 py-2 rounded-xl font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 shadow transition cursor-pointer">
+          Update Password
+        </button>
+      </div>
+    </div>
+  </section>
 
   <!-- ======================================================================= -->
   <!-- TAB 1: ENQUIRIES & FOLLOW-UPS (GOOGLE SHEETS BACKEND LEDGER)            -->
@@ -394,7 +558,7 @@
       <section class="lg:col-span-8 flex flex-col gap-4">
         <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-3.5 shadow-xl grid grid-cols-1 sm:grid-cols-12 gap-2.5">
           <div class="sm:col-span-5">
-            <input type="text" id="enqSearchInput" placeholder="Search customer, phone, city, notes, requirement..." oninput="renderEnquiriesList()"
+            <input type="text" id="enqSearchInput" placeholder="Search customer, phone, city, notes, requirement..." oninput="debouncedEnquirySearch()"
               class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" />
           </div>
           <div class="sm:col-span-3">
@@ -459,13 +623,13 @@
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
           <div class="sm:col-span-5">
             <label class="block text-xs font-medium text-slate-300 mb-1.5">Customer Name <span class="text-slate-500">(Optional)</span></label>
-            <input type="text" id="customerNameInput" placeholder="e.g., Mr. Rahul Menon" oninput="renderPreview()"
+            <input type="text" id="customerNameInput" placeholder="e.g., Mr. Rahul Menon" oninput="debouncedRenderPreview()"
               class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 outline-none transition" />
           </div>
 
           <div class="sm:col-span-4">
             <label class="block text-xs font-medium text-slate-300 mb-1.5">Customer WhatsApp No</label>
-            <input type="text" id="customerPhoneInput" placeholder="e.g., 919847000000" oninput="renderPreview()"
+            <input type="text" id="customerPhoneInput" placeholder="e.g., 919847000000" oninput="debouncedRenderPreview()"
               class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 outline-none transition font-mono" />
           </div>
 
@@ -485,7 +649,7 @@
                 New #
               </button>
             </div>
-            <input type="text" id="refCodeInput" placeholder="e.g., MF-2026-101" oninput="renderPreview()"
+            <input type="text" id="refCodeInput" placeholder="e.g., MF-2026-101" oninput="debouncedRenderPreview()"
               class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 outline-none transition font-mono" />
           </div>
 
@@ -506,7 +670,7 @@
 
           <div class="sm:col-span-7">
             <label class="block text-xs font-medium text-slate-300 mb-1.5">Custom Build Title</label>
-            <input type="text" id="buildTitleInput" value="High-Performance Gaming PC" placeholder="e.g., High-Performance Gaming PC" oninput="renderPreview()"
+            <input type="text" id="buildTitleInput" value="High-Performance Gaming PC" placeholder="e.g., High-Performance Gaming PC" oninput="debouncedRenderPreview()"
               class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-500 outline-none transition" />
           </div>
 
@@ -798,7 +962,7 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-3 border-t border-[#334155]">
         <div class="sm:col-span-4">
-          <input type="text" id="qtSearchInput" placeholder="Search Quote # (MF-2026-101), customer, phone, CPU, GPU..." oninput="renderQuotationsWorkspace()"
+          <input type="text" id="qtSearchInput" placeholder="Search Quote # (MF-2026-101), customer, phone, CPU, GPU..." oninput="debouncedQuotationsSearch()"
             class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" />
         </div>
         <div class="sm:col-span-3">
@@ -859,7 +1023,7 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-3 border-t border-[#334155]">
         <div class="sm:col-span-5">
-          <input type="text" id="prebuiltSearchInput" placeholder="Search Build #, title, CPU, GPU, RAM..." oninput="renderPrebuiltSets()"
+          <input type="text" id="prebuiltSearchInput" placeholder="Search Build #, title, CPU, GPU, RAM..." oninput="debouncedPrebuiltSearch()"
             class="w-full bg-[#0f172a] border border-[#334155] focus:border-cyan-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" />
         </div>
         <div class="sm:col-span-3">
@@ -889,67 +1053,6 @@
     </div>
 
     <div id="prebuiltWeeksContainer" class="flex flex-col gap-4"></div>
-  </section>
-
-  <!-- ======================================================================= -->
-  <!-- TAB 4: PRE-BUILT PC SETS (PRICE-SORTED CATALOG)                         -->
-  <!-- ======================================================================= -->
-  <section id="workspace_prebuilts" class="workspace-panel hidden flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-6 flex-col gap-5">
-    <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-4 sm:p-5 shadow-xl">
-      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <div>
-          <div class="flex items-center gap-2">
-            <h2 class="text-base sm:text-lg font-bold text-white">Pre-Built PC Sets — Price-Sorted Catalog</h2>
-            <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
-              EXTERNAL ITEMS AUTO-STRIPPED • BUILD # +1
-            </span>
-          </div>
-          <p class="text-xs text-slate-400 mt-0.5">All generated quotations automatically strip Monitors, KB/Mouse, UPS & Speakers and save as sequentially numbered Pre-Built PC sets (<code class="text-cyan-300">Build #1, #2, #3...</code>).</p>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2">
-          <button type="button" onclick="syncMasterAndPrebuiltsToGoogleSheet(false)"
-            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#0f172a] hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 transition cursor-pointer" title="Sync Pre-Built Sets & Master Sheet to Google Sheets tabs">
-            <span>🔄 Sync to Google Sheet</span>
-          </button>
-          <button type="button" onclick="exportPrebuiltsCSV()"
-            class="admin-only-control inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-white shadow transition cursor-pointer">
-            <span>Export Pre-Built PCs Sheet (CSV/Excel)</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-3 border-t border-[#334155]">
-        <div class="sm:col-span-4">
-          <input type="text" id="qtSearchInput" placeholder="Search Quote # (MF-2026-101), customer, phone, CPU, GPU..." oninput="renderQuotationsWorkspace()"
-            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" />
-        </div>
-        <div class="sm:col-span-3">
-          <select id="qtStaffFilter" onchange="renderQuotationsWorkspace()"
-            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-cyan-300 font-semibold outline-none">
-            <option value="ALL">All Staff Members</option>
-          </select>
-        </div>
-        <div class="sm:col-span-2">
-          <select id="qtBranchFilter" onchange="renderQuotationsWorkspace()"
-            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white outline-none">
-            <option value="ALL">All Branches</option>
-            <option value="Calicut">Calicut</option>
-            <option value="Kochi">Kochi</option>
-          </select>
-        </div>
-        <div class="sm:col-span-3">
-          <select id="qtSortSelect" onchange="renderQuotationsWorkspace()"
-            class="w-full bg-[#0f172a] border border-[#334155] focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-emerald-300 font-semibold outline-none">
-            <option value="newest">Sort: Newest Updated</option>
-            <option value="price_desc">Quote Total: High to Low</option>
-            <option value="price_asc">Quote Total: Low to High</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div id="quotationsWorkspaceList" class="flex flex-col gap-4"></div>
   </section>
 
   <!-- ======================================================================= -->
@@ -999,7 +1102,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-3 border-t border-[#334155]">
         <div class="sm:col-span-5">
           <label class="block text-[11px] font-medium text-slate-400 mb-1">Search Component Model / Spec</label>
-          <input type="text" id="masterSearchInput" placeholder="Search Ryzen 5, RTX 5060, B650M, DDR5, SN5100..." oninput="renderMasterSheet()"
+          <input type="text" id="masterSearchInput" placeholder="Search Ryzen 5, RTX 5060, B650M, DDR5, SN5100..." oninput="debouncedMasterSearch()"
             class="w-full bg-[#0f172a] border border-[#334155] focus:border-amber-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" />
         </div>
         <div class="sm:col-span-4">
@@ -1260,7 +1363,7 @@
       <section class="lg:col-span-7 flex flex-col gap-4">
         <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-3.5 shadow-xl grid grid-cols-1 sm:grid-cols-12 gap-2.5">
           <div class="sm:col-span-4">
-            <input type="text" id="srvSearchInput" placeholder="Search ticket #, customer, phone, S/N, issue..." oninput="renderServiceTickets()"
+            <input type="text" id="srvSearchInput" placeholder="Search ticket #, customer, phone, S/N, issue..." oninput="debouncedServiceSearch()"
               class="w-full bg-[#0f172a] border border-[#334155] focus:border-purple-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" />
           </div>
           <div class="sm:col-span-4">
@@ -1324,7 +1427,7 @@
 
     <div class="bg-[#1e293b] border border-[#334155] rounded-2xl p-3.5 shadow-xl grid grid-cols-1 sm:grid-cols-12 gap-2.5">
       <div class="sm:col-span-5">
-        <input type="text" id="bldSearchInput" placeholder="Search quote #, customer name, phone, build title, parts..." oninput="renderBuildOrders()"
+        <input type="text" id="bldSearchInput" placeholder="Search quote #, customer name, phone, build title, parts..." oninput="debouncedBuildsSearch()"
           class="w-full bg-[#0f172a] border border-[#334155] focus:border-sky-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" />
       </div>
       <div class="sm:col-span-3">
@@ -1650,8 +1753,26 @@
     let currentUser = null;
 
     function isAdminUser() {
-      return Boolean(currentUser && currentUser.role === "admin");
+      return Boolean(currentUser && currentUser.role === "admin" && currentUser.username === "ashwin");
     }
+
+    function toggleUserProfileDropdown(event) {
+      if (event) event.stopPropagation();
+      const dd = document.getElementById("userProfileDropdown");
+      if (dd) dd.classList.toggle("hidden");
+    }
+
+    function closeUserProfileDropdown() {
+      const dd = document.getElementById("userProfileDropdown");
+      if (dd) dd.classList.add("hidden");
+    }
+
+    document.addEventListener("click", (e) => {
+      const container = document.getElementById("userMenuContainer");
+      if (container && !container.contains(e.target)) {
+        closeUserProfileDropdown();
+      }
+    });
 
     function getCustomPasswords() {
       try {
@@ -1753,6 +1874,9 @@
     function logoutTeamUser() {
       currentUser = null;
       sessionStorage.removeItem(AUTH_SESSION_KEY);
+      if (state.activeTab === "admin") {
+        switchWorkspaceTab("enquiries");
+      }
       document.getElementById("loginUsernameInput").value = "";
       document.getElementById("loginPasswordInput").value = "";
       document.getElementById("loginErrorBox").classList.add("hidden");
@@ -1784,6 +1908,28 @@
       localStorage.setItem(AUTH_CUSTOM_PWDS_KEY, JSON.stringify(custom));
       closeModal("passwordModal");
       showToast("Password updated successfully!", "emerald");
+    }
+
+    function saveAdminInlinePassword() {
+      if (!isAdminUser()) return;
+      const oldPwd = document.getElementById("adminInlineOldPwd").value;
+      const newPwd = document.getElementById("adminInlineNewPwd").value.trim();
+
+      if (oldPwd !== getExpectedPassword(currentUser.username)) {
+        showToast("Current password is incorrect.", "amber");
+        return;
+      }
+      if (newPwd.length < 4) {
+        showToast("New password must be at least 4 characters.", "amber");
+        return;
+      }
+
+      const custom = getCustomPasswords();
+      custom[currentUser.username] = newPwd;
+      localStorage.setItem(AUTH_CUSTOM_PWDS_KEY, JSON.stringify(custom));
+      document.getElementById("adminInlineOldPwd").value = "";
+      document.getElementById("adminInlineNewPwd").value = "";
+      showToast("Admin password updated successfully!", "emerald");
     }
 
     // =========================================================================
@@ -2050,7 +2196,7 @@
 
       const exactFpMatch = (state.masterItems || []).find(m => {
         if (category && category !== "Other" && m.category !== category) return false;
-        const mFp = buildTokenFingerprint(m.name);
+        const mFp = m.normKey || buildTokenFingerprint(m.name);
         return mFp === fp && haveCompatibleCriticalSpecs(rawName, m.name);
       });
       if (exactFpMatch) return { item: exactFpMatch, score: 1.0 };
@@ -2060,7 +2206,7 @@
       (state.masterItems || []).forEach(m => {
         if (category && category !== "Other" && m.category !== category) return;
         if (!haveCompatibleCriticalSpecs(rawName, m.name)) return;
-        const mFp = buildTokenFingerprint(m.name);
+        const mFp = m.normKey || buildTokenFingerprint(m.name);
         const score = computeFingerprintSimilarity(fp, mFp);
         if (score >= 0.85 && score > bestScore) {
           bestScore = score;
@@ -2201,7 +2347,7 @@
       for (let i = 0; i < items.length; i++) {
         if (visited.has(items[i].id)) continue;
         const base = items[i];
-        const baseFp = buildTokenFingerprint(base.name);
+        const baseFp = base.normKey || buildTokenFingerprint(base.name);
         const group = [base];
         visited.add(base.id);
 
@@ -2211,7 +2357,7 @@
           if (base.category !== cand.category) continue;
           if (!haveCompatibleCriticalSpecs(base.name, cand.name)) continue;
 
-          const candFp = buildTokenFingerprint(cand.name);
+          const candFp = cand.normKey || buildTokenFingerprint(cand.name);
           const sim = computeFingerprintSimilarity(baseFp, candFp);
           if (sim >= 0.85) {
             group.push(cand);
@@ -2363,6 +2509,7 @@
     const DEFAULT_SHEET_SECRET = "MF_SECRET_2026";
 
     let state = {
+      activeTab: "enquiries",
       globalMargin: 26,
       components: [],
       highlights: [],
@@ -2380,8 +2527,43 @@
       activeEnquiryId: null,
       editingQuoteBaseCode: null,
       cloudPollTimer: null,
-      isSyncing: false
+      cloudPushTimer: null,
+      lastCloudUpdatedAt: 0,
+      isSyncing: false,
+      visibleLimits: {
+        enquiries: 40,
+        quotations: 30,
+        master: 60,
+        service: 40,
+        builds: 30
+      }
     };
+
+    function debounce(fn, delay = 140) {
+      let timer = null;
+      return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+      };
+    }
+
+    const debouncedEnquirySearch = debounce(() => { state.visibleLimits.enquiries = 40; renderEnquiriesList(); }, 140);
+    const debouncedQuotationsSearch = debounce(() => { state.visibleLimits.quotations = 30; renderQuotationsWorkspace(); }, 140);
+    const debouncedPrebuiltSearch = debounce(() => renderPrebuiltSets(), 140);
+    const debouncedMasterSearch = debounce(() => { state.visibleLimits.master = 60; renderMasterSheet(); }, 140);
+    const debouncedServiceSearch = debounce(() => { state.visibleLimits.service = 40; renderServiceTickets(); }, 140);
+    const debouncedBuildsSearch = debounce(() => { state.visibleLimits.builds = 30; renderBuildOrders(); }, 140);
+    const debouncedRowAutocomplete = debounce((rowId, val) => openRowMasterAutocomplete(rowId, val), 130);
+    const debouncedRenderPreview = debounce(() => renderPreview(), 90);
+
+    function showMoreListItems(tabKey, increment = 40) {
+      state.visibleLimits[tabKey] = (state.visibleLimits[tabKey] || 40) + increment;
+      if (tabKey === "enquiries") renderEnquiriesList();
+      else if (tabKey === "quotations") renderQuotationsWorkspace();
+      else if (tabKey === "master") renderMasterSheet();
+      else if (tabKey === "service") renderServiceTickets();
+      else if (tabKey === "builds") renderBuildOrders();
+    }
 
     function uid() {
       return "id_" + Date.now().toString(36) + "_" + Math.random().toString(36).substring(2, 8);
@@ -2539,6 +2721,11 @@
     }
 
     function switchWorkspaceTab(tabName) {
+      if (tabName === "admin" && !isAdminUser()) {
+        showToast("Admin Dashboard is restricted to Ashwin only.", "amber");
+        tabName = "enquiries";
+      }
+      state.activeTab = tabName;
       document.querySelectorAll(".workspace-panel").forEach(panel => {
         panel.classList.add("hidden");
         panel.classList.remove("flex", "grid");
@@ -2560,8 +2747,11 @@
       const activeBtn = document.getElementById(`tabBtn_${tabName}`);
       if (activeBtn) {
         activeBtn.className = "workspace-tab-btn inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer bg-emerald-600 text-white shadow shrink-0";
+        activeBtn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
       }
 
+      if (tabName === "admin") renderAdminDashboard();
+      if (tabName === "enquiries") renderEnquiriesList();
       if (tabName === "quotations") renderQuotationsWorkspace();
       if (tabName === "prebuilts") renderPrebuiltSets();
       if (tabName === "master") renderMasterSheet();
@@ -2601,6 +2791,10 @@
         state.buildOrders = JSON.parse(localStorage.getItem(DB_KEYS.BUILDS) || "[]");
         state.deletedIds = JSON.parse(localStorage.getItem(DB_KEYS.DELETED) || "[]");
 
+        state.masterItems.forEach(m => {
+          if (m && !m.normKey) m.normKey = buildTokenFingerprint(m.name);
+        });
+
         const savedCloudUrl = localStorage.getItem(DB_KEYS.CLOUD_URL);
         if (savedCloudUrl !== null) state.cloudSyncUrl = savedCloudUrl;
 
@@ -2635,7 +2829,10 @@
     function persistDatabaseToStorage() {
       saveLocalOnly();
       if (state.cloudSyncUrl) {
-        pushMergedToCloud();
+        clearTimeout(state.cloudPushTimer);
+        state.cloudPushTimer = setTimeout(() => {
+          pushMergedToCloud();
+        }, 1200);
       }
     }
 
@@ -2661,8 +2858,8 @@
       const all = [...(localArr || []), ...(remoteArr || [])];
       all.forEach(item => {
         if (!item || !item.id || delSet.has(String(item.id))) return;
-        const fp = buildTokenFingerprint(item.name);
-        if (item.normKey && delSet.has(String(item.normKey))) return;
+        const fp = item.normKey || buildTokenFingerprint(item.name);
+        if (fp && delSet.has(String(fp))) return;
         const compositeKey = `${item.category || "Other"}::${fp}`;
         const existing = map.get(compositeKey);
         if (!existing || Number(item.updatedAt || 0) >= Number(existing.updatedAt || 0)) {
@@ -2704,6 +2901,10 @@
       if (Array.isArray(remoteData.masterItems)) {
         state.masterItems = mergeMasterCollections(state.masterItems, remoteData.masterItems, delSet);
         changed = true;
+      }
+
+      if (remoteData.updatedAt) {
+        state.lastCloudUpdatedAt = Number(remoteData.updatedAt) || Date.now();
       }
 
       if (changed) {
@@ -2748,6 +2949,20 @@
       state.isSyncing = true;
       setCloudSyncIndicator("syncing");
       try {
+        // Lightweight timestamp delta check on background polls
+        if (silent && state.lastCloudUpdatedAt > 0 && state.cloudSyncUrl.endsWith(".json")) {
+          const tsUrl = state.cloudSyncUrl.replace(/\.json$/, "/updatedAt.json");
+          const tsRes = await fetch(tsUrl);
+          if (tsRes.ok) {
+            const remoteTs = await tsRes.json();
+            if (remoteTs && Number(remoteTs) <= state.lastCloudUpdatedAt) {
+              setCloudSyncIndicator("connected", `Up to date • ${new Date().toLocaleTimeString()}`);
+              state.isSyncing = false;
+              return;
+            }
+          }
+        }
+
         const res = await fetch(state.cloudSyncUrl);
         if (res.ok) {
           const data = await res.json();
@@ -2785,8 +3000,9 @@
     async function pushDirectSnapshotToCloud() {
       if (!state.cloudSyncUrl) return;
       try {
+        const nowTs = Date.now();
         const payload = {
-          updatedAt: Date.now(),
+          updatedAt: nowTs,
           deletedIds: state.deletedIds,
           enquiries: state.enquiries,
           serviceTickets: state.serviceTickets,
@@ -2801,6 +3017,7 @@
           body: JSON.stringify(payload)
         });
         if (putRes.ok) {
+          state.lastCloudUpdatedAt = nowTs;
           setCloudSyncIndicator("connected", `Last Synced: ${new Date().toLocaleTimeString()}`);
         } else {
           setCloudSyncIndicator("error");
@@ -2875,13 +3092,420 @@
       const bldBadge = document.getElementById("navBuildsCount");
       if (bldBadge) bldBadge.textContent = activeBldCount;
 
-      renderEnquiriesList();
-      renderQuotationsWorkspace();
-      renderPrebuiltSets();
-      renderMasterSheet();
-      renderServiceTickets();
-      renderBuildOrders();
+      if (isAdminUser()) {
+        const todayIso = getTodayIsoLocal();
+        const overdueAlerts = state.enquiries.filter(e => e.status !== "Closed" && e.status !== "Won / Billed" && e.nextFollowUp && e.nextFollowUp < todayIso).length;
+        const adminBadge = document.getElementById("navAdminAlertsCount");
+        if (adminBadge) adminBadge.textContent = overdueAlerts;
+      }
+
+      // Only render the active visible tab to keep mobile & desktop UI completely lag-free
+      const tab = state.activeTab || "enquiries";
+      if (tab === "admin") renderAdminDashboard();
+      else if (tab === "enquiries") renderEnquiriesList();
+      else if (tab === "quotations") renderQuotationsWorkspace();
+      else if (tab === "prebuilts") renderPrebuiltSets();
+      else if (tab === "master") renderMasterSheet();
+      else if (tab === "service") renderServiceTickets();
+      else if (tab === "builds") renderBuildOrders();
+
       updateSheetSyncBadges();
+    }
+
+    // =========================================================================
+    // 8B. ADMIN EXECUTIVE DASHBOARD ENGINE (ASHWIN ONLY)
+    // =========================================================================
+    function isDateInAdminPeriod(isoDateStr, period) {
+      if (period === "ALL" || !isoDateStr) return true;
+      const todayIso = getTodayIsoLocal();
+      if (period === "TODAY") return isoDateStr === todayIso;
+      if (period === "MONTH") return isoDateStr.slice(0, 7) === todayIso.slice(0, 7);
+      if (period === "WEEK") {
+        const weekAgoIso = addDaysIso(-7);
+        return isoDateStr >= weekAgoIso;
+      }
+      return true;
+    }
+
+    function calculateQuoteEstProfit(q) {
+      let baseSum = 0;
+      let preGstSum = 0;
+      const margin = Number(q.globalMargin ?? 26);
+      (q.components || []).forEach(c => {
+        const qty = Math.max(1, parseInt(c.qty, 10) || 1);
+        const base = (parseFloat(c.basePrice) || 0) * qty;
+        const finalVal = (c.isNetPrice || margin === 0) ? Math.round(parseFloat(c.basePrice) || 0) * qty : Math.round((parseFloat(c.basePrice) || 0) * (1 + margin / 100)) * qty;
+        baseSum += base;
+        preGstSum += (c.isNetPrice || margin === 0) ? base : (finalVal / 1.18);
+      });
+      return Math.max(0, Math.round(preGstSum - baseSum));
+    }
+
+    function inspectStaffMemberWork(staffName, category) {
+      if (category === "leads") {
+        switchWorkspaceTab("enquiries");
+        const ownerSel = document.getElementById("enqOwnerFilter");
+        if (ownerSel) ownerSel.value = staffName;
+        const statusSel = document.getElementById("enqStatusFilter");
+        if (statusSel) statusSel.value = "ACTIVE";
+        renderEnquiriesList();
+      } else if (category === "quotes") {
+        switchWorkspaceTab("quotations");
+        const qtStaff = document.getElementById("qtStaffFilter");
+        if (qtStaff) qtStaff.value = staffName;
+        renderQuotationsWorkspace();
+      } else if (category === "service") {
+        switchWorkspaceTab("service");
+        const srvTech = document.getElementById("srvTechFilter");
+        if (srvTech) srvTech.value = staffName;
+        const srvStat = document.getElementById("srvStatusFilter");
+        if (srvStat) srvStat.value = "ACTIVE";
+        renderServiceTickets();
+      } else if (category === "builds") {
+        switchWorkspaceTab("builds");
+        const bldTech = document.getElementById("bldTechFilter");
+        if (bldTech) bldTech.value = staffName;
+        const bldStat = document.getElementById("bldStatusFilter");
+        if (bldStat) bldStat.value = "ACTIVE";
+        renderBuildOrders();
+      }
+    }
+
+    function renderAdminDashboard() {
+      if (!isAdminUser()) return;
+
+      const period = document.getElementById("adminPeriodFilter")?.value || "MONTH";
+      const branch = document.getElementById("adminBranchFilter")?.value || "ALL";
+      const todayIso = getTodayIsoLocal();
+
+      const enqs = state.enquiries.filter(e => {
+        if (!isDateInAdminPeriod(e.dateIso, period)) return false;
+        if (branch !== "ALL") {
+          const eBranch = String(e.city || "").toLowerCase().includes("ernakulam") || String(e.city || "").toLowerCase().includes("kochi") ? "Kochi" : "Calicut";
+          if (eBranch !== branch) return false;
+        }
+        return true;
+      });
+
+      const latestQuoteByBase = new Map();
+      state.savedQuotes.forEach(q => {
+        if (!isDateInAdminPeriod(q.quoteDate, period)) return;
+        if (branch !== "ALL" && (q.branch || "Calicut") !== branch) return;
+        const base = extractBaseQuoteCode(q.refCode || q.id);
+        const existing = latestQuoteByBase.get(base);
+        if (!existing || extractRevisionNumber(q.refCode) >= extractRevisionNumber(existing.refCode)) {
+          latestQuoteByBase.set(base, q);
+        }
+      });
+      const uniqueQuotes = Array.from(latestQuoteByBase.values());
+
+      const srvs = state.serviceTickets.filter(t => {
+        if (!isDateInAdminPeriod(t.intakeDate, period)) return false;
+        if (branch !== "ALL" && (t.branch || "Calicut") !== branch) return false;
+        return true;
+      });
+
+      const blds = state.buildOrders.filter(b => {
+        if (!isDateInAdminPeriod(b.orderDate, period)) return false;
+        if (branch !== "ALL" && (b.branch || "Calicut") !== branch) return false;
+        return true;
+      });
+
+      const totalQuotedValue = uniqueQuotes.reduce((s, q) => s + (Number(q.totalFinal) || 0), 0);
+      const totalQuotedProfit = uniqueQuotes.reduce((s, q) => s + calculateQuoteEstProfit(q), 0);
+      const wonEnqs = enqs.filter(e => e.status === "Won / Billed");
+      const conversionRate = enqs.length > 0 ? ((wonEnqs.length / enqs.length) * 100).toFixed(1) : "0.0";
+      const confirmedBuildRev = blds.reduce((s, b) => s + (Number(b.totalFinal) || 0), 0);
+      const serviceCollected = srvs.reduce((s, t) => s + (t.paymentStatus?.startsWith("Paid") ? (Number(t.chargeAmount) || 0) : (Number(t.advancePaid) || 0)), 0);
+      const openOverdueCount = state.enquiries.filter(e => e.status !== "Closed" && e.status !== "Won / Billed" && e.nextFollowUp && e.nextFollowUp < todayIso).length;
+
+      const kpiContainer = document.getElementById("adminExecutiveKpis");
+      if (kpiContainer) {
+        kpiContainer.innerHTML = `
+          <div class="bg-[#1e293b] border border-emerald-500/40 rounded-2xl p-3.5 shadow-lg">
+            <div class="text-[10px] font-bold uppercase text-emerald-400">Quoted Pipeline (${uniqueQuotes.length})</div>
+            <div class="text-lg sm:text-xl font-extrabold font-mono text-white mt-1">₹${formatINR(totalQuotedValue)}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">Est. Profit: <span class="text-amber-300 font-mono font-bold">₹${formatINR(totalQuotedProfit)}</span></div>
+          </div>
+          <div class="bg-[#1e293b] border border-cyan-500/40 rounded-2xl p-3.5 shadow-lg">
+            <div class="text-[10px] font-bold uppercase text-cyan-400">Confirmed PC Builds (${blds.length})</div>
+            <div class="text-lg sm:text-xl font-extrabold font-mono text-white mt-1">₹${formatINR(confirmedBuildRev)}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${blds.filter(b => b.stage !== "Delivered").length} in assembly/QC</div>
+          </div>
+          <div class="bg-[#1e293b] border border-amber-500/40 rounded-2xl p-3.5 shadow-lg">
+            <div class="text-[10px] font-bold uppercase text-amber-400">Lead Win Rate</div>
+            <div class="text-lg sm:text-xl font-extrabold font-mono text-white mt-1">${conversionRate}%</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${wonEnqs.length} Won of ${enqs.length} Leads</div>
+          </div>
+          <div class="bg-[#1e293b] border border-purple-500/40 rounded-2xl p-3.5 shadow-lg">
+            <div class="text-[10px] font-bold uppercase text-purple-300">Service &amp; RMA (${srvs.length})</div>
+            <div class="text-lg sm:text-xl font-extrabold font-mono text-white mt-1">₹${formatINR(serviceCollected)}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${srvs.filter(t => t.status !== "Delivered / Closed").length} open tickets</div>
+          </div>
+          <div class="bg-[#1e293b] border border-red-500/40 rounded-2xl p-3.5 shadow-lg">
+            <div class="text-[10px] font-bold uppercase text-red-400">Overdue Follow-Ups</div>
+            <div class="text-lg sm:text-xl font-extrabold font-mono text-white mt-1">${openOverdueCount}</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">Needs team follow-up</div>
+          </div>
+          <div class="bg-[#1e293b] border border-sky-500/40 rounded-2xl p-3.5 shadow-lg">
+            <div class="text-[10px] font-bold uppercase text-sky-400">Catalog &amp; Master DB</div>
+            <div class="text-lg sm:text-xl font-extrabold font-mono text-white mt-1">${state.masterItems.length} Parts</div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${state.prebuiltSets.length} Pre-Built PC sets</div>
+          </div>
+        `;
+      }
+
+      const alerts = [];
+      state.enquiries.forEach(e => {
+        if (e.status === "Closed" || e.status === "Won / Billed") return;
+        if (e.nextFollowUp && e.nextFollowUp < todayIso) {
+          alerts.push({
+            level: "red",
+            tag: "OVERDUE LEAD",
+            text: `${e.customer || e.phone} (${e.requirement || "PC"}) — Due ${formatSheetDate(e.nextFollowUp)} • Owner: ${e.owner || "Unassigned"}`,
+            action: `switchWorkspaceTab('enquiries')`
+          });
+        } else if (e.leadTemp === "Hot") {
+          alerts.push({
+            level: "amber",
+            tag: "HOT LEAD",
+            text: `${e.customer || e.phone} (${e.budget || "No budget"}) — Owner: ${e.owner || "Unassigned"} • Status: ${e.status}`,
+            action: `switchWorkspaceTab('enquiries')`
+          });
+        }
+      });
+
+      state.buildOrders.forEach(b => {
+        if (b.stage === "Awaiting Parts") {
+          const pendingParts = (b.parts || []).filter(p => p.status === "Ordered from Distributor").map(p => p.name);
+          alerts.push({
+            level: "amber",
+            tag: "BUILD PARTS",
+            text: `${b.refCode} (${b.customerName}) awaiting ${pendingParts.length || "parts"} • Tech: ${b.assignedTech}`,
+            action: `switchWorkspaceTab('builds')`
+          });
+        }
+      });
+
+      state.serviceTickets.forEach(t => {
+        if (t.status === "Ready for Pickup") {
+          alerts.push({
+            level: "cyan",
+            tag: "READY PICKUP",
+            text: `${t.ticketCode} (${t.customer} — ${t.device}) ready for customer collection (${t.branch})`,
+            action: `switchWorkspaceTab('service')`
+          });
+        }
+      });
+
+      const alertsContainer = document.getElementById("adminBottlenecksContainer");
+      const alertsBadge = document.getElementById("adminAlertsSummaryBadge");
+      if (alertsBadge) alertsBadge.textContent = `${alerts.length} active alert(s)`;
+      if (alertsContainer) {
+        if (alerts.length === 0) {
+          alertsContainer.innerHTML = `<div class="p-6 text-center text-xs text-emerald-300 bg-[#0f172a] rounded-xl border border-emerald-500/30">✅ Zero overdue bottlenecks! All leads, builds, and service tickets are on schedule.</div>`;
+        } else {
+          alertsContainer.innerHTML = alerts.slice(0, 15).map(a => {
+            const pillClass = a.level === "red"
+              ? "bg-red-500/20 text-red-300 border-red-500/40"
+              : (a.level === "cyan" ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40" : "bg-amber-500/20 text-amber-300 border-amber-500/40");
+            return `
+              <div onclick="${a.action}" class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-[#0f172a] hover:bg-slate-800/80 border border-[#334155] cursor-pointer transition text-xs">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="px-2 py-0.5 rounded text-[9px] font-extrabold border shrink-0 ${pillClass}">${a.tag}</span>
+                  <span class="text-slate-200 truncate">${escapeHtml(a.text)}</span>
+                </div>
+                <span class="text-[10px] text-slate-400 shrink-0">Open →</span>
+              </div>
+            `;
+          }).join("");
+        }
+      }
+
+      const branchContainer = document.getElementById("adminBranchSplitContainer");
+      if (branchContainer) {
+        const branches = ["Calicut", "Kochi"];
+        branchContainer.innerHTML = branches.map(bName => {
+          const bQuotes = uniqueQuotes.filter(q => (q.branch || "Calicut") === bName);
+          const bBuilds = blds.filter(b => (b.branch || "Calicut") === bName && b.stage !== "Delivered");
+          const bSrv = srvs.filter(t => (t.branch || "Calicut") === bName && t.status !== "Delivered / Closed");
+          return `
+            <div class="p-3 rounded-xl bg-[#0f172a] border border-[#334155] text-xs">
+              <div class="flex items-center justify-between font-bold text-white mb-1.5">
+                <span>📍 ${bName} Counter</span>
+                <span class="text-emerald-300 font-mono">${bQuotes.length} Quotes</span>
+              </div>
+              <div class="flex items-center justify-between text-[11px] text-slate-400">
+                <span>Active Builds: <strong class="text-sky-300">${bBuilds.length}</strong></span>
+                <span>Open Service/RMA: <strong class="text-purple-300">${bSrv.length}</strong></span>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      const sourceContainer = document.getElementById("adminLeadSourcesContainer");
+      if (sourceContainer) {
+        const srcCounts = {};
+        enqs.forEach(e => {
+          const src = e.leadSource || "Other";
+          srcCounts[src] = (srcCounts[src] || 0) + 1;
+        });
+        const entries = Object.entries(srcCounts).sort((a, b) => b[1] - a[1]);
+        sourceContainer.innerHTML = entries.length > 0
+          ? entries.map(([src, cnt]) => `<span class="px-2.5 py-1 rounded-lg bg-[#0f172a] border border-[#334155] text-[11px] text-slate-200">${escapeHtml(src)}: <strong class="text-emerald-300 font-mono">${cnt}</strong></span>`).join("")
+          : `<span class="text-[11px] text-slate-500">No leads in selected period</span>`;
+      }
+
+      const staffRoster = [
+        { name: "Ashwin", role: "Admin / Sales" },
+        { name: "Shaheer Ali", role: "Sales Executive" },
+        { name: "Athulya", role: "Sales & Warranty/RMA" },
+        { name: "Rinoj", role: "Chief Technician" },
+        { name: "Adith", role: "In-House Technician" },
+        { name: "Rijil", role: "Visiting Technician" }
+      ];
+
+      const staffTbody = document.getElementById("adminStaffTableBody");
+      if (staffTbody) {
+        staffTbody.innerHTML = staffRoster.map(st => {
+          const periodLeads = enqs.filter(e => String(e.owner || "").toLowerCase() === st.name.toLowerCase());
+          const activeLeads = periodLeads.filter(e => e.status !== "Closed" && e.status !== "Won / Billed");
+          const overdueLeads = activeLeads.filter(e => e.nextFollowUp && e.nextFollowUp < todayIso);
+          const wonLeads = periodLeads.filter(e => e.status === "Won / Billed");
+          const staffQuotes = uniqueQuotes.filter(q => String(q.createdBy || "").toLowerCase() === st.name.toLowerCase());
+          const staffQuotedSum = staffQuotes.reduce((s, q) => s + (Number(q.totalFinal) || 0), 0);
+          const activeBuilds = blds.filter(b => b.assignedTech === st.name && b.stage !== "Delivered");
+          const openService = srvs.filter(t => t.assignedTo === st.name && t.status !== "Delivered / Closed");
+
+          const isTech = ["Rinoj", "Adith", "Rijil"].includes(st.name);
+
+          return `
+            <tr class="hover:bg-slate-800/40 transition">
+              <td class="py-3 px-3 font-bold text-white whitespace-nowrap">${escapeHtml(st.name)}</td>
+              <td class="py-3 px-3 text-slate-400 text-[11px] whitespace-nowrap">${escapeHtml(st.role)}</td>
+              <td class="py-3 px-3 text-center font-mono font-bold text-emerald-300">${activeLeads.length}</td>
+              <td class="py-3 px-3 text-center font-mono font-bold ${overdueLeads.length > 0 ? 'text-red-400' : 'text-slate-500'}">${overdueLeads.length}</td>
+              <td class="py-3 px-3 text-center font-mono font-bold text-cyan-300">${staffQuotes.length}</td>
+              <td class="py-3 px-3 text-right font-mono text-slate-200">₹${formatINR(staffQuotedSum)}</td>
+              <td class="py-3 px-3 text-center font-mono font-bold text-amber-300">${wonLeads.length}</td>
+              <td class="py-3 px-3 text-center font-mono font-bold text-sky-300">${activeBuilds.length}</td>
+              <td class="py-3 px-3 text-center font-mono font-bold text-purple-300">${openService.length}</td>
+              <td class="py-3 px-3 text-right whitespace-nowrap">
+                <div class="inline-flex items-center gap-1">
+                  ${!isTech ? `<button type="button" onclick="inspectStaffMemberWork('${st.name}', 'leads')" class="px-2 py-1 rounded bg-[#0f172a] hover:bg-slate-700 text-[10px] font-semibold text-emerald-300 border border-[#334155] cursor-pointer">Leads</button>` : ""}
+                  ${(isTech || st.name === "Athulya") ? `<button type="button" onclick="inspectStaffMemberWork('${st.name}', 'service')" class="px-2 py-1 rounded bg-[#0f172a] hover:bg-slate-700 text-[10px] font-semibold text-purple-300 border border-[#334155] cursor-pointer">Jobs</button>` : ""}
+                  ${isTech ? `<button type="button" onclick="inspectStaffMemberWork('${st.name}', 'builds')" class="px-2 py-1 rounded bg-[#0f172a] hover:bg-slate-700 text-[10px] font-semibold text-sky-300 border border-[#334155] cursor-pointer">Builds</button>` : ""}
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      const hwContainer = document.getElementById("adminTopHardwareContainer");
+      if (hwContainer) {
+        const partCounts = {};
+        uniqueQuotes.forEach(q => {
+          (q.components || []).forEach(c => {
+            if (c.category === "Processor" || c.category === "Graphics Card") {
+              const cleanLabel = String(c.name || "").split("|")[0].trim();
+              if (cleanLabel) {
+                partCounts[cleanLabel] = (partCounts[cleanLabel] || 0) + (Math.max(1, parseInt(c.qty, 10) || 1));
+              }
+            }
+          });
+        });
+        const topParts = Object.entries(partCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+        hwContainer.innerHTML = topParts.length > 0
+          ? topParts.map(([name, count], idx) => `
+              <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-[#0f172a] border border-[#334155] text-xs">
+                <div class="truncate">
+                  <span class="text-purple-400 font-mono font-bold mr-1.5">#${idx + 1}</span>
+                  <span class="text-white font-semibold">${escapeHtml(name)}</span>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[11px] font-bold shrink-0">${count}x quoted</span>
+              </div>
+            `).join("")
+          : `<div class="text-xs text-slate-400 py-6 text-center bg-[#0f172a] rounded-xl border border-dashed border-[#334155]">Create quotations to see top CPU &amp; GPU demand analytics.</div>`;
+      }
+
+      const feedContainer = document.getElementById("adminRecentFeedContainer");
+      if (feedContainer) {
+        const feedEvents = [];
+        state.savedQuotes.slice(0, 8).forEach(q => {
+          feedEvents.push({
+            ts: Number(q.updatedAt || 0),
+            badge: "QUOTE",
+            color: "text-emerald-300 bg-emerald-500/15 border-emerald-500/30",
+            text: `${q.createdBy || "Staff"} issued ${q.refCode} for ${q.customerName || "Customer"} — ₹${formatINR(q.totalFinal)}/-`
+          });
+        });
+        state.enquiries.slice(0, 8).forEach(e => {
+          feedEvents.push({
+            ts: Number(e.updatedAt || 0),
+            badge: "ENQUIRY",
+            color: "text-cyan-300 bg-cyan-500/15 border-cyan-500/30",
+            text: `${e.owner || "Sales"} updated lead ${e.customer || e.phone} (${e.status})`
+          });
+        });
+        state.serviceTickets.slice(0, 8).forEach(t => {
+          feedEvents.push({
+            ts: Number(t.updatedAt || 0),
+            badge: "SERVICE",
+            color: "text-purple-300 bg-purple-500/15 border-purple-500/30",
+            text: `${t.ticketCode} (${t.device}) → ${t.status} [Assigned: ${t.assignedTo}]`
+          });
+        });
+        state.buildOrders.slice(0, 8).forEach(b => {
+          feedEvents.push({
+            ts: Number(b.updatedAt || 0),
+            badge: "BUILD",
+            color: "text-sky-300 bg-sky-500/15 border-sky-500/30",
+            text: `${b.refCode} (${b.customerName}) → ${b.stage} [Tech: ${b.assignedTech}]`
+          });
+        });
+
+        feedEvents.sort((a, b) => b.ts - a.ts);
+        feedContainer.innerHTML = feedEvents.length > 0
+          ? feedEvents.slice(0, 12).map(ev => `
+              <div class="flex items-center gap-2 p-2 rounded-xl bg-[#0f172a] border border-[#334155] text-[11px]">
+                <span class="px-1.5 py-0.2 rounded text-[9px] font-bold border shrink-0 ${ev.color}">${ev.badge}</span>
+                <span class="text-slate-200 truncate">${escapeHtml(ev.text)}</span>
+              </div>
+            `).join("")
+          : `<div class="text-xs text-slate-400 py-6 text-center bg-[#0f172a] rounded-xl">No recent activity logged yet.</div>`;
+      }
+    }
+
+    function copyAdminExecutiveSummary() {
+      if (!isAdminUser()) return;
+      const period = document.getElementById("adminPeriodFilter")?.value || "MONTH";
+      const periodLabel = period === "MONTH"
+        ? new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })
+        : (period === "WEEK" ? "Last 7 Days" : (period === "TODAY" ? "Today" : "All Time"));
+      const todayIso = getTodayIsoLocal();
+
+      const periodEnqs = state.enquiries.filter(e => isDateInAdminPeriod(e.dateIso, period));
+      const openEnqs = periodEnqs.filter(e => e.status !== "Closed" && e.status !== "Won / Billed");
+      const overdue = openEnqs.filter(e => e.nextFollowUp && e.nextFollowUp < todayIso);
+      const periodQuotes = state.savedQuotes.filter(q => isDateInAdminPeriod(q.quoteDate, period));
+      const periodQuoteVal = periodQuotes.reduce((s, q) => s + (Number(q.totalFinal) || 0), 0);
+      const activeBuilds = state.buildOrders.filter(b => isDateInAdminPeriod(b.orderDate, period) && b.stage !== "Delivered");
+      const openService = state.serviceTickets.filter(t => isDateInAdminPeriod(t.intakeDate, period) && t.status !== "Delivered / Closed");
+
+      const lines = [
+        `*Media Faktory — Executive Ops Report (${periodLabel})*`,
+        ``,
+        `• *Active Open Enquiries:* ${openEnqs.length} (${overdue.length} Overdue Follow-Ups)`,
+        `• *Quotations Issued:* ${periodQuotes.length} quotes (₹${formatINR(periodQuoteVal)}/-)`,
+        `• *Active PC Builds & QC:* ${activeBuilds.length} builds in progress`,
+        `• *Open Service & RMA Tickets:* ${openService.length} jobs active`,
+        `• *Master Price Sheet:* ${state.masterItems.length} verified parts`,
+        ``,
+        `_Generated from Media Faktory Admin HQ_`
+      ];
+      copyTextToClipboard(lines.join("\n"), `${periodLabel} Executive Summary copied for WhatsApp!`);
     }
 
     function loadPrebuiltIntoGenerator(setId) {
@@ -3075,7 +3699,10 @@
         return;
       }
 
-      container.innerHTML = groups.map(g => {
+      const limit = state.visibleLimits.quotations || 30;
+      const visibleGroups = groups.slice(0, limit);
+
+      const cardsHtml = visibleGroups.map(g => {
         const latest = g.latest;
         const revCount = g.versions.length;
         const linkedEnq = findLinkedEnquiryForQuote(latest);
@@ -3157,7 +3784,7 @@
         }).join("");
 
         return `
-          <div class="bg-[#1e293b] border border-[#334155] hover:border-slate-500 rounded-2xl p-4 shadow-xl transition">
+          <div class="perf-card bg-[#1e293b] border border-[#334155] hover:border-slate-500 rounded-2xl p-4 shadow-xl transition">
             <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 mb-3 border-b border-[#334155]">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="text-sm sm:text-base font-extrabold text-white">${escapeHtml(latest.customerName || "Walk-In / Unnamed Customer")}</span>
@@ -3180,6 +3807,12 @@
           </div>
         `;
       }).join("");
+
+      const moreHtml = groups.length > limit
+        ? `<button type="button" onclick="showMoreListItems('quotations', 30)" class="w-full py-2.5 rounded-xl text-xs font-bold bg-[#1e293b] hover:bg-slate-800 text-emerald-300 border border-[#334155] cursor-pointer">Show More Quotations (${groups.length - limit} remaining)</button>`
+        : "";
+
+      container.innerHTML = cardsHtml + moreHtml;
     }
 
     function startBrandNewQuoteFromArchive() {
@@ -4005,7 +4638,7 @@
           : "";
 
         return `
-          <div class="bg-[#1e293b] border border-[#334155] hover:border-purple-500/40 rounded-2xl p-4 shadow-lg transition">
+          <div class="perf-card bg-[#1e293b] border border-[#334155] hover:border-purple-500/40 rounded-2xl p-4 shadow-lg transition">
             <div class="flex flex-wrap items-start justify-between gap-2 mb-2">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 font-mono text-xs font-extrabold border border-purple-500/40">${escapeHtml(t.ticketCode)}</span>
@@ -4463,17 +5096,23 @@
       if (!dropdown || !row) return;
 
       const q = String(queryText || row.name || "").toLowerCase().trim();
-      const qFp = buildTokenFingerprint(q);
+      const qFp = q.length >= 3 ? buildTokenFingerprint(q) : "";
       const rowCat = row.category || "Other";
 
       const matches = (state.masterItems || [])
         .map(item => {
+          const itemNameLower = item.name.toLowerCase();
           const directHit = !q
             ? (rowCat === "Other" || item.category === rowCat)
-            : (item.name.toLowerCase().includes(q) || item.category.toLowerCase().includes(q));
-          const specsMatch = q ? haveCompatibleCriticalSpecs(q, item.name) : true;
-          const simScore = (qFp && specsMatch) ? computeFingerprintSimilarity(qFp, buildTokenFingerprint(item.name)) : 0;
-          return { item, directHit, simScore };
+            : (itemNameLower.includes(q) || item.category.toLowerCase().includes(q));
+          if (directHit) {
+            return { item, directHit: true, simScore: 1.0 };
+          }
+          if (!qFp || q.length < 4 || !haveCompatibleCriticalSpecs(q, item.name)) {
+            return { item, directHit: false, simScore: 0 };
+          }
+          const simScore = computeFingerprintSimilarity(qFp, item.normKey || buildTokenFingerprint(item.name));
+          return { item, directHit: false, simScore };
         })
         .filter(x => x.directHit || x.simScore >= 0.78)
         .sort((a, b) => {
@@ -4584,7 +5223,7 @@
                 <input type="text" value="${escapeHtml(row.name)}" placeholder="Search Master Sheet or type spec..."
                   onfocus="openRowMasterAutocomplete('${row.id}', this.value)"
                   onblur="setTimeout(closeAllRowAutocompletes, 180)"
-                  oninput="updateRowField('${row.id}', 'name', this.value); openRowMasterAutocomplete('${row.id}', this.value);"
+                  oninput="updateRowField('${row.id}', 'name', this.value); debouncedRowAutocomplete('${row.id}', this.value);"
                   class="w-full bg-[#1e293b] border border-[#334155] focus:border-cyan-400 rounded-lg px-2.5 py-1.5 text-xs text-white uppercase placeholder-slate-500 outline-none" />
                 <div id="row_ac_${row.id}" class="row-master-ac-dropdown hidden absolute left-0 right-0 top-full mt-1 z-40 bg-[#0f172a] border border-cyan-500/50 rounded-xl shadow-2xl overflow-hidden"></div>
               </div>
@@ -4706,7 +5345,7 @@
         if (priceEl) priceEl.textContent = `₹${formatINR(finalPrice)}/-`;
         updateSummaryTotals();
       }
-      renderPreview();
+      debouncedRenderPreview();
     }
 
     function moveRow(index, direction) {
@@ -4797,7 +5436,7 @@
           : "";
 
         return `
-          <div class="bg-[#1e293b] border border-[#334155] hover:border-cyan-500/50 rounded-2xl p-4 flex flex-col justify-between shadow-lg transition">
+          <div class="perf-card bg-[#1e293b] border border-[#334155] hover:border-cyan-500/50 rounded-2xl p-4 flex flex-col justify-between shadow-lg transition">
             <div>
               <div class="flex items-center justify-between gap-2 mb-2">
                 <div class="flex items-center gap-1.5">
@@ -5258,9 +5897,11 @@
         return;
       }
 
+      const limit = state.visibleLimits.master || 60;
+      const visibleItems = items.slice(0, limit);
       const selectedSet = new Set(state.selectedMasterIds || []);
 
-      tbody.innerHTML = items.map(item => {
+      const rowsHtml = visibleItems.map(item => {
         const floor24 = item.isNetPrice ? item.gettingPrice : Math.round(item.gettingPrice * 1.24);
         const target28 = item.isNetPrice ? item.gettingPrice : Math.round(item.gettingPrice * 1.28);
         const isChecked = selectedSet.has(item.id);
@@ -5319,6 +5960,12 @@
           </tr>
         `;
       }).join("");
+
+      const moreRow = items.length > limit
+        ? `<tr><td colspan="9" class="p-3 text-center"><button type="button" onclick="showMoreListItems('master', 60)" class="px-4 py-2 rounded-xl text-xs font-bold bg-[#0f172a] hover:bg-slate-800 text-amber-300 border border-[#334155] cursor-pointer">Load More Components (${items.length - limit} remaining)</button></td></tr>`
+        : "";
+
+      tbody.innerHTML = rowsHtml + moreRow;
     }
 
     function openMasterPickerModal() {
@@ -5338,7 +5985,8 @@
           if (q && !item.name.toLowerCase().includes(q) && !item.category.toLowerCase().includes(q)) return false;
           return true;
         })
-        .sort((a, b) => compareMasterItemsByCategory(a, b, "price_asc"));
+        .sort((a, b) => compareMasterItemsByCategory(a, b, "price_asc"))
+        .slice(0, 60);
 
       if (matches.length === 0) {
         listEl.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">No matching components in Master Price Sheet.</div>`;
@@ -6077,7 +6725,10 @@
         return;
       }
 
-      container.innerHTML = filtered.map(e => {
+      const limit = state.visibleLimits.enquiries || 40;
+      const visibleItems = filtered.slice(0, limit);
+
+      const cardsHtml = visibleItems.map(e => {
         const isClosed = e.status === "Closed" || e.status === "Won / Billed";
         const isOverdue = !isClosed && e.nextFollowUp && e.nextFollowUp < todayIso;
         const isDueToday = !isClosed && e.nextFollowUp && e.nextFollowUp === todayIso;
@@ -6121,7 +6772,7 @@
             </button>`;
 
         return `
-          <div class="bg-[#1e293b] border ${cardBorder} hover:border-slate-500 rounded-2xl p-3.5 shadow-lg transition">
+          <div class="perf-card bg-[#1e293b] border ${cardBorder} hover:border-slate-500 rounded-2xl p-3.5 shadow-lg transition">
             <div class="flex flex-wrap items-start justify-between gap-2 mb-2">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="text-sm font-bold text-white">${tempIcon} ${escapeHtml(e.customer || "Unnamed Lead")}</span>
@@ -6152,7 +6803,6 @@
 
             ${e.notes ? `<div class="bg-[#0f172a] border border-[#334155] rounded-xl px-2.5 py-2 text-xs text-slate-200 whitespace-pre-line mb-2">${escapeHtml(e.notes)}</div>` : ""}
 
-            <!-- Single-Line Compact Follow-Up, Quick Note & Action Bar -->
             <div class="flex flex-wrap items-center justify-between gap-1.5 pt-2 border-t border-[#334155] text-[11px]">
               <div class="flex flex-wrap items-center gap-1.5">
                 <div class="inline-flex items-center gap-1 bg-[#0f172a] border border-[#334155] rounded-lg px-1.5 py-0.5" title="Next Follow-Up Date">
@@ -6186,6 +6836,12 @@
           </div>
         `;
       }).join("");
+
+      const moreHtml = filtered.length > limit
+        ? `<button type="button" onclick="showMoreListItems('enquiries', 40)" class="w-full py-2.5 rounded-xl text-xs font-bold bg-[#1e293b] hover:bg-slate-800 text-emerald-300 border border-[#334155] cursor-pointer">Show More Leads (${filtered.length - limit} remaining)</button>`
+        : "";
+
+      container.innerHTML = cardsHtml + moreHtml;
     }
 
     function updateSheetSyncBadges() {
@@ -6246,7 +6902,7 @@
         if (data && data.ok) {
           enquiry.sheetSynced = true;
           saveLocalOnly();
-          renderEnquiriesList();
+          if (state.activeTab === "enquiries") renderEnquiriesList();
           updateSheetSyncBadges();
           return true;
         }
@@ -6432,7 +7088,7 @@
       const item = state.highlights.find(h => h.id === id);
       if (!item) return;
       item[field] = value;
-      renderPreview();
+      debouncedRenderPreview();
     }
 
     function removeHighlight(id) {
