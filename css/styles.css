@@ -1,0 +1,21 @@
+::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .wa-bg {
+      background-color: #0b141a;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 0);
+      background-size: 18px 18px;
+    }
+    .perf-card {
+      content-visibility: auto;
+      contain-intrinsic-size: 140px;
+    }
+    @media (max-width: 1023px) {
+      header.sticky {
+        backdrop-filter: none !important;
+        background-color: #0f172a !important;
+      }
+    }
